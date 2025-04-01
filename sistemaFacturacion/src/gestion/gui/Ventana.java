@@ -26,6 +26,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 
 public class Ventana {
 
@@ -44,7 +46,13 @@ public class Ventana {
 	private JTextField textField_9;
 	private DefaultTableModel modelo;
 	private JTable tablaProveedor;
-
+	private JTextField textField_10;
+	private JTextField textField_11;
+	private JPasswordField passwordField;
+	private JTextField textField_12;
+	private JTextField textField_13;
+	private JTable table_1;
+	DefaultTableModel modeloUsuario;
 	/**
 	 * Launch the application.
 	 */
@@ -341,5 +349,90 @@ public class Ventana {
 		JScrollPane spProveedor = new JScrollPane(tablaProveedor);
 		spProveedor.setBounds(10, 164, 761, 444);
 		panel_1.add(spProveedor);
+		
+		JPanel gestionUsuario = new JPanel();
+		tabbedPane.addTab("New tab", null, gestionUsuario, null);
+		gestionUsuario.setLayout(null);
+		
+		JLabel lblNewLabel_3 = new JLabel("Nombre");
+		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel_3.setBounds(20, 48, 60, 19);
+		gestionUsuario.add(lblNewLabel_3);
+		
+		JLabel lblNewLabel_3_1 = new JLabel("Apellido");
+		lblNewLabel_3_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel_3_1.setBounds(20, 90, 54, 19);
+		gestionUsuario.add(lblNewLabel_3_1);
+		
+		JLabel lblNewLabel_3_2 = new JLabel("Correo");
+		lblNewLabel_3_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel_3_2.setBounds(20, 131, 60, 19);
+		gestionUsuario.add(lblNewLabel_3_2);
+		
+		JLabel lblNewLabel_3_2_1 = new JLabel("Usuario");
+		lblNewLabel_3_2_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel_3_2_1.setBounds(263, 48, 54, 19);
+		gestionUsuario.add(lblNewLabel_3_2_1);
+		
+		textField_10 = new JTextField();
+		textField_10.setBounds(77, 46, 159, 27);
+		gestionUsuario.add(textField_10);
+		textField_10.setColumns(10);
+		
+		textField_11 = new JTextField();
+		textField_11.setColumns(10);
+		textField_11.setBounds(77, 88, 159, 27);
+		gestionUsuario.add(textField_11);
+		
+		JLabel lblNewLabel_3_2_1_1 = new JLabel("Contraseña");
+		lblNewLabel_3_2_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel_3_2_1_1.setBounds(263, 90, 82, 19);
+		gestionUsuario.add(lblNewLabel_3_2_1_1);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(340, 89, 159, 24);
+		gestionUsuario.add(passwordField);
+		
+		textField_12 = new JTextField();
+		textField_12.setColumns(10);
+		textField_12.setBounds(77, 132, 159, 27);
+		gestionUsuario.add(textField_12);
+		
+		textField_13 = new JTextField();
+		textField_13.setColumns(10);
+		textField_13.setBounds(314, 46, 159, 27);
+		gestionUsuario.add(textField_13);
+		
+		JLabel lblNewLabel_3_2_1_1_1 = new JLabel("Rol");
+		lblNewLabel_3_2_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel_3_2_1_1_1.setBounds(263, 135, 36, 19);
+		gestionUsuario.add(lblNewLabel_3_2_1_1_1);
+		
+		JRadioButton rdbtnNewRadioButton = new JRadioButton("Admin");
+		rdbtnNewRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		rdbtnNewRadioButton.setBounds(298, 134, 71, 23);
+		gestionUsuario.add(rdbtnNewRadioButton);
+		
+		JRadioButton rdbtnEmpleado = new JRadioButton("Empleado");
+		rdbtnEmpleado.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		rdbtnEmpleado.setBounds(389, 134, 95, 23);
+		gestionUsuario.add(rdbtnEmpleado);
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(20, 247, 735, 345);
+		gestionUsuario.add(scrollPane_1);
+		
+		String[] columnasUsr = {"Nombre", "Apellido", "Correo", "Usuario", "Rol", "Editar", "Eliminar"};
+		modeloUsuario = new DefaultTableModel(columnasUsr, 0);
+		table_1 = new JTable(modeloUsuario);
+		scrollPane_1.setViewportView(table_1);
+		
+		JSeparator separator_2 = new JSeparator(SwingConstants.VERTICAL);
+		separator_2.setBounds(20, 170, 743, 2);
+		gestionUsuario.add(separator_2);
+		
+		JButton btnNewButton_2 = new JButton("Agregar");
+		btnNewButton_2.setBounds(654, 209, 101, 27);
+		gestionUsuario.add(btnNewButton_2);
 	}
 }
