@@ -1,7 +1,5 @@
 package gestion.gui;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.JPanel;
@@ -11,10 +9,16 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
+import javax.security.auth.login.LoginContext;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,9 +27,13 @@ import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+
+import gestion.database.DatabaseConnection;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 
@@ -46,13 +54,18 @@ public class Ventana {
 	private JTextField textField_9;
 	private DefaultTableModel modelo;
 	private JTable tablaProveedor;
-	private JTextField textField_10;
-	private JTextField textField_11;
-	private JPasswordField passwordField;
-	private JTextField textField_12;
-	private JTextField textField_13;
+	private JTextField usertfNombre;
+	private JTextField usertfApellido;
+	private JPasswordField usertfCont;
+	private JTextField usertfCorreo;
+	private JTextField usertfUsuario;
 	private JTable table_1;
 	DefaultTableModel modeloUsuario;
+	JRadioButton rdbAdmin, rdbEmpleado;
+	private ButtonGroup roles =  new ButtonGroup();
+	
+	private Connection con = DatabaseConnection.getConnection();
+	
 	/**
 	 * Launch the application.
 	 */
@@ -76,12 +89,14 @@ public class Ventana {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
+		// PANEL PARA EL FORMULARIO DE REGISTRO DE PRODUCTOS
+		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBounds(0, 0, 1063, 645);
 		frame.getContentPane().add(tabbedPane);
 		
 		JPanel panel = new JPanel();
-		tabbedPane.addTab("New tab", null, panel, null);
+		tabbedPane.addTab("Productos", null, panel, null);
 		panel.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("ID");
@@ -287,9 +302,12 @@ public class Ventana {
 		btnEliminar_1.setBounds(522, 236, 187, 29);
 		panel.add(btnEliminar_1);
 		
+		// PANEL PARA EL FORMULARIO DE REGISTRO DE PROVEEDORES
+		
 		JPanel panel_1 = new JPanel();
-		tabbedPane.addTab("New tab", null, panel_1, null);
+		tabbedPane.addTab("Proveedores", null, panel_1, null);
 		panel_1.setLayout(null);
+		
 		
 		JLabel lblNewLabel_1_1_1 = new JLabel("Registro de Proveedores");
 		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -350,8 +368,10 @@ public class Ventana {
 		spProveedor.setBounds(10, 164, 761, 444);
 		panel_1.add(spProveedor);
 		
+		// PANEL PARA EL FORMULARIO DE CREACIÓN DE USUARIOS DEL SISTEMA
+		
 		JPanel gestionUsuario = new JPanel();
-		tabbedPane.addTab("New tab", null, gestionUsuario, null);
+		tabbedPane.addTab("Usuarios", null, gestionUsuario, null);
 		gestionUsuario.setLayout(null);
 		
 		JLabel lblNewLabel_3 = new JLabel("Nombre");
@@ -374,49 +394,52 @@ public class Ventana {
 		lblNewLabel_3_2_1.setBounds(263, 48, 54, 19);
 		gestionUsuario.add(lblNewLabel_3_2_1);
 		
-		textField_10 = new JTextField();
-		textField_10.setBounds(77, 46, 159, 27);
-		gestionUsuario.add(textField_10);
-		textField_10.setColumns(10);
+		usertfNombre = new JTextField();
+		usertfNombre.setBounds(77, 46, 159, 27);
+		gestionUsuario.add(usertfNombre);
+		usertfNombre.setColumns(10);
 		
-		textField_11 = new JTextField();
-		textField_11.setColumns(10);
-		textField_11.setBounds(77, 88, 159, 27);
-		gestionUsuario.add(textField_11);
+		usertfApellido = new JTextField();
+		usertfApellido.setColumns(10);
+		usertfApellido.setBounds(77, 88, 159, 27);
+		gestionUsuario.add(usertfApellido);
 		
 		JLabel lblNewLabel_3_2_1_1 = new JLabel("Contraseña");
 		lblNewLabel_3_2_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblNewLabel_3_2_1_1.setBounds(263, 90, 82, 19);
 		gestionUsuario.add(lblNewLabel_3_2_1_1);
 		
-		passwordField = new JPasswordField();
-		passwordField.setBounds(340, 89, 159, 24);
-		gestionUsuario.add(passwordField);
+		usertfCont = new JPasswordField();
+		usertfCont.setBounds(340, 89, 159, 24);
+		gestionUsuario.add(usertfCont);
 		
-		textField_12 = new JTextField();
-		textField_12.setColumns(10);
-		textField_12.setBounds(77, 132, 159, 27);
-		gestionUsuario.add(textField_12);
+		usertfCorreo = new JTextField();
+		usertfCorreo.setColumns(10);
+		usertfCorreo.setBounds(77, 132, 159, 27);
+		gestionUsuario.add(usertfCorreo);
 		
-		textField_13 = new JTextField();
-		textField_13.setColumns(10);
-		textField_13.setBounds(314, 46, 159, 27);
-		gestionUsuario.add(textField_13);
+		usertfUsuario = new JTextField();
+		usertfUsuario.setColumns(10);
+		usertfUsuario.setBounds(314, 46, 159, 27);
+		gestionUsuario.add(usertfUsuario);
 		
 		JLabel lblNewLabel_3_2_1_1_1 = new JLabel("Rol");
 		lblNewLabel_3_2_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblNewLabel_3_2_1_1_1.setBounds(263, 135, 36, 19);
 		gestionUsuario.add(lblNewLabel_3_2_1_1_1);
 		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("Admin");
-		rdbtnNewRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		rdbtnNewRadioButton.setBounds(298, 134, 71, 23);
-		gestionUsuario.add(rdbtnNewRadioButton);
+		rdbAdmin = new JRadioButton("Admin");
+		rdbAdmin.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		rdbAdmin.setBounds(298, 134, 71, 23);
+		gestionUsuario.add(rdbAdmin);
 		
-		JRadioButton rdbtnEmpleado = new JRadioButton("Empleado");
-		rdbtnEmpleado.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		rdbtnEmpleado.setBounds(389, 134, 95, 23);
-		gestionUsuario.add(rdbtnEmpleado);
+		rdbEmpleado = new JRadioButton("Empleado");
+		rdbEmpleado.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		rdbEmpleado.setBounds(389, 134, 95, 23);
+		gestionUsuario.add(rdbEmpleado);
+		
+		roles.add(rdbAdmin);
+		roles.add(rdbEmpleado);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		scrollPane_1.setBounds(20, 247, 735, 345);
@@ -431,8 +454,63 @@ public class Ventana {
 		separator_2.setBounds(20, 170, 743, 2);
 		gestionUsuario.add(separator_2);
 		
-		JButton btnNewButton_2 = new JButton("Agregar");
-		btnNewButton_2.setBounds(654, 209, 101, 27);
-		gestionUsuario.add(btnNewButton_2);
+		JButton btnAgregarUsuario = new JButton("Agregar");
+		btnAgregarUsuario.setBounds(654, 209, 101, 27);
+		btnAgregarUsuario.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				agregarUsuario();
+			}
+			
+		});
+		gestionUsuario.add(btnAgregarUsuario);
+	}
+	
+	public void agregarUsuario() {
+		
+		String nombre = usertfNombre.getText();
+		String apellido = usertfApellido.getText();
+		String correo = usertfCorreo.getText();
+		String rol = rdbAdmin.isSelected() ? "admin" : "empleado";
+		String usuario = usertfUsuario.getText();
+		String password = new String(usertfCont.getPassword());
+		Login loginxd = new Login();
+		String passSHA = loginxd.generarHashSHA256(password);
+		
+		String sql = "INSERT INTO usuarios (username, password, rol, nombre, apellidos, correo)" +
+		"VALUES ('"+usuario+"', '"+passSHA+"', '"+rol+"', '"+nombre+"', '"+apellido+"', '"+correo+"')";
+		
+		if (!faltanDatos(nombre, apellido, correo, rol, usuario, password)) {
+			try (PreparedStatement ps = con.prepareStatement(sql);){
+				
+				ps.executeUpdate(sql);
+				clear();
+			}catch(SQLException e){
+		        JOptionPane.showMessageDialog(frame, "Error: " + e.getMessage(), 
+			            "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}else {
+			JOptionPane.showMessageDialog(frame, "Por favor, completa todos los campos ", "Error", JOptionPane.WARNING_MESSAGE);
+		}
+
+		
+	}
+	
+	public boolean faltanDatos(String nombre, String apellido, String correo, String rol, String usuario, String password) {
+		if (nombre.isBlank() || apellido.isBlank() || correo.isBlank() || rol.isBlank() || usuario.isBlank() || password.isBlank()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public void clear() {
+		usertfNombre.setText("");
+		usertfApellido.setText("");
+		usertfCorreo.setText("");
+		roles.clearSelection();
+		usertfUsuario.setText("");
+		usertfCont.setText("");
 	}
 }
