@@ -16,7 +16,6 @@ import java.sql.SQLException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -41,12 +40,13 @@ public class PanelUsuarios extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private JTextField usertfNombre, usertfApellido, usertfCorreo, usertfUsuario;
 	private JPasswordField usertfCont;
-	DefaultTableModel modeloUsuario;
+	static DefaultTableModel modeloUsuario; 
 	private JTable table_1;
 	JRadioButton rdbAdmin, rdbEmpleado;
 	Window ventanaP = SwingUtilities.getWindowAncestor(PanelUsuarios.this);
 	private ButtonGroup roles =  new ButtonGroup();
-	private Connection con = DatabaseConnection.getConnection();
+	private static Connection con = DatabaseConnection.getConnection();
+	//EditUserFrame editFrame;
 
 	
 	public PanelUsuarios() {
@@ -148,11 +148,28 @@ public class PanelUsuarios extends JPanel{
             public void mouseClicked(MouseEvent e) {
                 int fila = table_1.rowAtPoint(e.getPoint());
                 int columna = table_1.columnAtPoint(e.getPoint());
-                int idUsuario = (int) table_1.getValueAt(fila, 0); // Obtener el ID del usuario
 
                 if (columna == 6) {
-                    abrirFrameEdicion(idUsuario, (String) table_1.getValueAt(fila, 1));
-                } 
+                	int idUsuario = (int) table_1.getValueAt(fila, 0);
+                    String nombre = (String) table_1.getValueAt(fila, 1);
+                    String apellido = (String) table_1.getValueAt(fila, 2);
+                    String correo = (String) table_1.getValueAt(fila, 3);
+                    String usuario = (String) table_1.getValueAt(fila, 4);
+                    String rol = (String) table_1.getValueAt(fila, 5);
+                    
+                    VentanaEditar(idUsuario, nombre, apellido, correo, usuario, rol);
+                    cargarUsuarios();
+                }else if(columna == 7) {
+                	int idUsuario = (int) table_1.getValueAt(fila, 0);
+                	int confirmacion = JOptionPane.showConfirmDialog(null, 
+                            "¿Estás seguro de que deseas eliminar este usuario?", 
+                            "Confirmar eliminación", 
+                            JOptionPane.YES_NO_OPTION);
+                	if (confirmacion == JOptionPane.YES_OPTION) {
+                        eliminarUsuario(idUsuario);
+                        cargarUsuarios();
+                    }
+                }
             }
         });
         
@@ -177,6 +194,13 @@ public class PanelUsuarios extends JPanel{
 	
 	}
 	
+	public void VentanaEditar(int idUsuario, String nombre, String apellido, String correo, String usuario, String rol /*String valueAt*/) {
+		VentanaEditarUsuario ventanaEditarUser = new VentanaEditarUsuario();
+		ventanaEditarUser.setDatos(idUsuario, nombre, apellido, correo, usuario, rol);
+		ventanaEditarUser.setLocation(getMousePosition());
+		ventanaEditarUser.setVisible(true);
+	}
+
 	public boolean faltanDatos(String nombre, String apellido, String correo, String rol, String usuario, String password) {
 		if (nombre.isBlank() || apellido.isBlank() || correo.isBlank() || rol.isBlank() || usuario.isBlank() || password.isBlank()) {
 			return true;
@@ -207,10 +231,8 @@ public class PanelUsuarios extends JPanel{
 	            ps.setString(6, correo);
 
 	            ps.executeUpdate();
-
 	            clear();
 	            cargarUsuarios();
-
 	        } catch (SQLException e) {
 	            JOptionPane.showMessageDialog(ventanaP, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        }
@@ -219,7 +241,7 @@ public class PanelUsuarios extends JPanel{
 	    }
 	}
 	
-	private void cargarUsuarios() {
+	static void cargarUsuarios() {
 	    modeloUsuario.setRowCount(0);
 
 	    try {
@@ -243,6 +265,24 @@ public class PanelUsuarios extends JPanel{
 	    }
 	}
 		
+	private void eliminarUsuario(int idUsuario) {
+		String sql = "DELETE FROM usuarios WHERE id_usuario = ?";
+		
+		try(PreparedStatement ps = con.prepareStatement(sql)){
+			ps.setInt(1, idUsuario);
+			int filasAfectadas = ps.executeUpdate();
+			
+			if (filasAfectadas > 0) {
+	            JOptionPane.showMessageDialog(null, "Usuario eliminado");
+	        } else {
+	            JOptionPane.showMessageDialog(null, "No se pudo eliminar el usuario.");
+	        }
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null, "Error al eliminar usuario: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
 	public void clear() {
 		usertfNombre.setText("");
 		usertfApellido.setText("");
@@ -250,19 +290,5 @@ public class PanelUsuarios extends JPanel{
 		roles.clearSelection();
 		usertfUsuario.setText("");
 		usertfCont.setText("");
-	}
-	
-	private void abrirFrameEdicion(int id, String nombre) {
-	    JFrame frameEditar = new JFrame("Editar Usuario");
-	    frameEditar.setSize(400, 200);
-	    frameEditar.setLocationRelativeTo(null);
-	    frameEditar.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	    frameEditar.setLayout(null);
-
-	    JLabel lblTitulo = new JLabel("Editando usuario: " + nombre);
-	    lblTitulo.setBounds(20, 20, 300, 20);
-	    frameEditar.add(lblTitulo);
-
-	    frameEditar.setVisible(true);
 	}
 }

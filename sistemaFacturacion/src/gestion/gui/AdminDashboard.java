@@ -1,6 +1,6 @@
 package gestion.gui;
 
-import javax.swing.JFrame;
+import javax.swing.JFrame; 
 import javax.swing.JTabbedPane;
 
 public class AdminDashboard extends JFrame {
@@ -17,6 +17,8 @@ public class AdminDashboard extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+        PanelVentas panelVentas = new PanelVentas();
+        tabbedPane.addTab("Ventas", panelVentas);
 		
 		//Añadimos cada panel independiente
         tabbedPane.addTab("Productos", new PanelProductos()); 
@@ -26,5 +28,4 @@ public class AdminDashboard extends JFrame {
         getContentPane().add(tabbedPane);
         setVisible(true);
 	}
-	
 }
