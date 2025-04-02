@@ -32,24 +32,6 @@ public class Login {
 	private Connection con = DatabaseConnection.getConnection();
 
 	
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Login window = new Login();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	
 	public JFrame getFrame() {
 		return this.frame;
 	}
@@ -139,9 +121,9 @@ public class Login {
 					frame.dispose();
 					
 					if (rol.equals("admin")) {
-						Ventana ventanaAdmin = new Ventana();
-						ventanaAdmin.getFrame().setLocation(location);
-						ventanaAdmin.getFrame().setVisible(true);
+						AdminDashboard ventanaAdmin = new AdminDashboard();
+						ventanaAdmin.setLocation(location);
+						ventanaAdmin.setVisible(true);
 					
 					} else if (rol.equals("empleado")) {
 						EmpleadoGUI ventanaEmpleado = new EmpleadoGUI();
