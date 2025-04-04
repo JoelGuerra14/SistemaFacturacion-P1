@@ -25,6 +25,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import gestion.clases.Cliente;
+import gestion.clases.Reloj;
 import gestion.database.DatabaseConnection;
 
 import javax.swing.JComboBox;
@@ -97,13 +98,13 @@ public class PanelVentas extends JPanel {
 		
 		JLabel lblNewLabel_3 = new JLabel("Fecha Fac.");
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel_3.setBounds(552, 17, 80, 23);
+		lblNewLabel_3.setBounds(552, 47, 80, 23);
 		add(lblNewLabel_3);
 		
 		tfFecha = new JTextField();
 		tfFecha.setEditable(false);
 		tfFecha.setColumns(10);
-		tfFecha.setBounds(642, 15, 123, 25);
+		tfFecha.setBounds(642, 45, 123, 25);
 		add(tfFecha);
 		
 		LocalDate fechaActual = LocalDate.now();
@@ -318,6 +319,19 @@ public class PanelVentas extends JPanel {
 			
 		});
 		add(btnAgregarCliente);
+		
+		JLabel lblReloj = new JLabel("Reloj");
+		lblReloj.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblReloj.setBounds(642, 20, 123, 23);
+		add(lblReloj);
+		
+		Reloj reloj = new Reloj(lblReloj);
+		
+		JLabel lblHora = new JLabel("Hora");
+		lblHora.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblHora.setBounds(551, 20, 68, 23);
+		add(lblHora);
+		reloj.iniciar();
 		
 		
 	}	
