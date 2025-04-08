@@ -7,7 +7,7 @@ import javax.swing.border.EmptyBorder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
-
+import gestion.clases.Empleado;
 import gestion.database.DatabaseConnection;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
@@ -138,14 +138,25 @@ public class VentanaEditarUsuario extends JFrame {
 			        int filasActualizadas = ps.executeUpdate();
 			        
 			        if (filasActualizadas > 0) {
+			        
 			            JOptionPane.showMessageDialog(null, "Usuario actualizado.");
 			            dispose(); // Cerrar ventana de edición
-						PanelUsuarios.cargarUsuarios(); // Esto recarga la tabla después de actualizar para que se vea correctamente los datos nuevos
+			            for(Empleado x : PanelUsuarios.listaUsuarios) {
+							if (x.getId() == Integer.parseInt(idUsuario)) {
+								x.setNombre(nuevoNombre);
+								x.setApellido(nuevoApellido);
+								x.setEmail(nuevoCorreo);
+								x.setUsername(nuevoUsuario);
+								x.setRol(nuevoRol);
+								break;
+							}
+						}
+						PanelUsuarios.mostrarUsuariosEnTabla(); // Esto recarga la tabla después de actualizar para que se vea correctamente los datos nuevos
 			        } else {
 			            JOptionPane.showMessageDialog(null, "Error al actualizar el usuario.");
 			        }
 			        ps.close();
-			        con.close();
+
 			    } catch (Exception ex) {
 			        ex.printStackTrace();
 			        JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());

@@ -1,5 +1,6 @@
 package gestion.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
@@ -7,6 +8,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -32,9 +34,6 @@ public class PanelProductos extends JPanel {
     private JTextField textField_1;
     private JTextField textField_2;
     private JTextField textField_3;
-    private JTextField textField_4;
-    private JTextField textField_5;
-    private JTextField textField_6;
     private JTable table;
 
     public PanelProductos() {
@@ -43,94 +42,107 @@ public class PanelProductos extends JPanel {
 
         
         // ============ PRIMERA PARTE (PRODUCTOS) ============
+        
+        JPanel panelTituloLbl = new JPanel();
+        panelTituloLbl.setBounds(0, 0, 330, 62);
+		panelTituloLbl.setBackground(new Color(95, 170, 254));
+		add(panelTituloLbl);
+		panelTituloLbl.setLayout(null);
+		
+        JLabel lblNewLabel_1 = new JLabel("  Registro de Productos");
+        lblNewLabel_1.setFont(new Font("Tahoma", Font.BOLD, 16));
+        lblNewLabel_1.setBorder(BorderFactory.createRaisedBevelBorder());
+        lblNewLabel_1.setBounds(10, 11, 310, 40);
+        panelTituloLbl.add(lblNewLabel_1);
+		
         JLabel lblNewLabel = new JLabel("ID");
+        lblNewLabel.setBounds(24, 95, 22, 29);
         lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNewLabel.setBounds(32, 74, 22, 29);
         add(lblNewLabel);
         
         textField = new JTextField();
+        textField.setBounds(56, 95, 73, 24);
         textField.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        textField.setBounds(64, 77, 73, 24);
         add(textField);
         textField.setColumns(10);
         
         textField_1 = new JTextField();
+        textField_1.setBounds(84, 130, 132, 24);
         textField_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
         textField_1.setColumns(10);
-        textField_1.setBounds(92, 117, 132, 24);
         add(textField_1);
         
         JLabel lblNombre = new JLabel("Nombre");
+        lblNombre.setBounds(24, 126, 55, 29);
         lblNombre.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNombre.setBounds(32, 113, 55, 29);
         add(lblNombre);
         
         textField_2 = new JTextField();
+        textField_2.setBounds(286, 99, 134, 24);
         textField_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
         textField_2.setColumns(10);
-        textField_2.setBounds(90, 153, 134, 24);
         add(textField_2);
         
         JLabel lblNombre_1 = new JLabel("Precio");
+        lblNombre_1.setBounds(226, 95, 55, 29);
         lblNombre_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNombre_1.setBounds(30, 149, 55, 29);
         add(lblNombre_1);
         
         JLabel lblNombre_1_1 = new JLabel("Stock");
+        lblNombre_1_1.setBounds(226, 129, 55, 29);
         lblNombre_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNombre_1_1.setBounds(30, 183, 55, 29);
         add(lblNombre_1_1);
         
         textField_3 = new JTextField();
+        textField_3.setBounds(286, 133, 134, 24);
         textField_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
         textField_3.setColumns(10);
-        textField_3.setBounds(90, 187, 134, 24);
         add(textField_3);
         
         JComboBox comboBox = new JComboBox();
+        comboBox.setBounds(502, 95, 115, 29);
         comboBox.setFont(new Font("Tahoma", Font.PLAIN, 14));
         comboBox.setModel(new DefaultComboBoxModel(new String[] {"Categoria 1", "Categoria 2", "Categoria 3", "Categoria 4"}));
-        comboBox.setBounds(320, 74, 115, 29);
         add(comboBox);
         
         JLabel lblCategoria = new JLabel("Categoria");
+        lblCategoria.setBounds(430, 95, 65, 29);
         lblCategoria.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblCategoria.setBounds(248, 74, 73, 29);
         add(lblCategoria);
         
         JComboBox comboBox_1 = new JComboBox();
+        comboBox_1.setBounds(502, 127, 115, 29);
         comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Proveedor 1", "Proveedor 2", "Proveedor 3"}));
         comboBox_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        comboBox_1.setBounds(320, 114, 115, 29);
         add(comboBox_1);
         
         JLabel lblProveedor = new JLabel("Proveedor");
+        lblProveedor.setBounds(430, 127, 65, 29);
         lblProveedor.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblProveedor.setBounds(248, 114, 73, 29);
         add(lblProveedor);
         
         JButton btnNewButton = new JButton("Agregar");
+        btnNewButton.setBounds(138, 178, 92, 29);
         btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnNewButton.setBounds(248, 150, 92, 29);
         add(btnNewButton);
         
         JButton btnEditar = new JButton("Editar");
+        btnEditar.setBounds(295, 178, 92, 29);
         btnEditar.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnEditar.setBounds(350, 150, 92, 29);
         add(btnEditar);
         
         JButton btnEliminar = new JButton("Eliminar");
+        btnEliminar.setBounds(460, 178, 187, 29);
         btnEliminar.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnEliminar.setBounds(248, 187, 187, 29);
         add(btnEliminar);
         
         JSeparator separator = new JSeparator();
-        separator.setBounds(10, 323, 1038, 2);
+        separator.setBounds(0, 226, 765, 2);
         add(separator);
         
         // ============ TABLA DE PRODUCTOS ============
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setBounds(10, 335, 755, 273);
+        scrollPane.setBounds(10, 238, 755, 370);
         add(scrollPane);
         
         table = new JTable();
@@ -140,57 +152,11 @@ public class PanelProductos extends JPanel {
         ));
         scrollPane.setViewportView(table);
         
-        // ============ SEGUNDA PARTE (PROVEEDORES) ============
-        JLabel lblNewLabel_1 = new JLabel("Registro de Productos");
-        lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNewLabel_1.setBounds(10, 26, 159, 24);
-        add(lblNewLabel_1);
-        
-        JLabel lblNewLabel_2 = new JLabel("ID");
-        lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNewLabel_2.setBounds(497, 74, 22, 29);
-        add(lblNewLabel_2);
-        
-        textField_4 = new JTextField();
-        textField_4.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        textField_4.setColumns(10);
-        textField_4.setBounds(539, 77, 73, 24);
-        add(textField_4);
-        
-        JLabel lblNombre_2 = new JLabel("Nombre");
-        lblNombre_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNombre_2.setBounds(497, 114, 55, 29);
-        add(lblNombre_2);
-        
-        textField_5 = new JTextField();
-        textField_5.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        textField_5.setColumns(10);
-        textField_5.setBounds(562, 117, 154, 24);
-        add(textField_5);
-        
-        JLabel lblNombre_1_2 = new JLabel("Contacto");
-        lblNombre_1_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNombre_1_2.setBounds(497, 150, 72, 29);
-        add(lblNombre_1_2);
-        
-        textField_6 = new JTextField();
-        textField_6.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        textField_6.setColumns(10);
-        textField_6.setBounds(572, 153, 144, 24);
-        add(textField_6);
-        
-        JSeparator separator_1 = new JSeparator(SwingConstants.VERTICAL);
-        separator_1.setBounds(473, 20, 7, 260);
-        add(separator_1);
-        
-        JLabel lblNewLabel_1_1 = new JLabel("Registro de Proveedores");
-        lblNewLabel_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        lblNewLabel_1_1.setBounds(500, 10, 159, 24);
-        add(lblNewLabel_1_1);
+
         
         // ============ MENÚ ============
         JMenuBar menuBar = new JMenuBar();
-        menuBar.setBounds(0, 0, 471, 22);
+        menuBar.setBounds(0, 0, 205, 22);
         add(menuBar);
         
         JMenu mnNewMenu = new JMenu("Archivo");
@@ -224,21 +190,6 @@ public class PanelProductos extends JPanel {
         
         JMenuItem mntmNewMenuItem_2 = new JMenuItem("Crear Categoria");
         mnNewMenu_2.add(mntmNewMenuItem_2);
-        
-        JButton btnNewButton_1 = new JButton("Agregar");
-        btnNewButton_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnNewButton_1.setBounds(522, 199, 92, 29);
-        add(btnNewButton_1);
-        
-        JButton btnEditar_1 = new JButton("Editar");
-        btnEditar_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnEditar_1.setBounds(624, 199, 92, 29);
-        add(btnEditar_1);
-        
-        JButton btnEliminar_1 = new JButton("Eliminar");
-        btnEliminar_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnEliminar_1.setBounds(522, 236, 187, 29);
-        add(btnEliminar_1);
 
     }
 }

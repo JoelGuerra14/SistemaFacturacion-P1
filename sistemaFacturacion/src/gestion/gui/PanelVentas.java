@@ -338,7 +338,7 @@ public class PanelVentas extends JPanel {
 	
 	public void actualizarComboBox() {
 		try{
-			String sql = "SELECT nombre, email, telefono FROM clientes";
+			String sql = "SELECT nombre, apellido, email, telefono FROM clientes";
 			PreparedStatement statement = con.prepareStatement(sql);
 			ResultSet rs = statement.executeQuery();
 			
@@ -346,9 +346,10 @@ public class PanelVentas extends JPanel {
 			
 			while(rs.next()) {
 				String nombre = rs.getString("nombre");
+				String apellido = rs.getString("apellido");
 				String email = rs.getString("email");
 				String telefono = rs.getString("telefono");
-				listaClientes.add(new Cliente(nombre, email, telefono));
+				listaClientes.add(new Cliente(nombre, apellido, email, telefono));
 			}
 			
 			for(Cliente x : listaClientes) {
@@ -403,6 +404,8 @@ public class PanelVentas extends JPanel {
 		double unidad = Double.parseDouble(tfPrecio.getText());
 		int cantidad = (int) spinnerCantidadProducto.getValue();
 		Double importe = unidad * cantidad;
+		// redondear a dos decimales
+		importe = Math.round(importe * 100.0) / 100.0;
 		Double impuesto = Double.parseDouble(tImpuesto.getText());
 		String neto = String.format("%.2f", importe + impuesto);
 		
@@ -419,7 +422,7 @@ public class PanelVentas extends JPanel {
 	    for (int fila = 0; fila < modelo.getRowCount(); fila++) {
 	        try {
 
-	            Object valor = modelo.getValueAt(fila, 6);
+	            Object valor = modelo.getValueAt(fila, 4);
 	            double precio = Double.parseDouble(valor.toString());
 	            subTotal += precio;
 	            

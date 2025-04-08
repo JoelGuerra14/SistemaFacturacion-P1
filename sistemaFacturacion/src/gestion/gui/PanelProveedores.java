@@ -1,8 +1,10 @@
 package gestion.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,10 +28,17 @@ public class PanelProveedores extends JPanel{
 		setPreferredSize(new Dimension(775, 618));
 		setLayout(null);
 		
-		JLabel lblNewLabel_1_1_1 = new JLabel("Registro de Proveedores");
-		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel_1_1_1.setBounds(24, 33, 159, 24);
-		add(lblNewLabel_1_1_1);
+		JPanel panelTituloLbl = new JPanel();
+		panelTituloLbl.setBackground(new Color(95, 170, 254));
+		panelTituloLbl.setBounds(0, 0, 330, 62);
+		add(panelTituloLbl);
+		panelTituloLbl.setLayout(null);
+		
+		JLabel lblNewLabel_1_1_1 = new JLabel("  Registro de Proveedores");
+		lblNewLabel_1_1_1.setBorder(BorderFactory.createRaisedBevelBorder());
+		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblNewLabel_1_1_1.setBounds(10, 11, 310, 40);
+		panelTituloLbl.add(lblNewLabel_1_1_1);
 		
 		JLabel lblNewLabel_2_1 = new JLabel("ID");
 		lblNewLabel_2_1.setFont(new Font("Tahoma", Font.PLAIN, 14));

@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -31,6 +32,8 @@ import javax.swing.table.DefaultTableModel;
 
 import gestion.database.DatabaseConnection;
 import gestion.util.ButtonRenderer;
+import gestion.clases.Empleado;
+
 
 public class PanelUsuarios extends JPanel{
 
@@ -46,6 +49,7 @@ public class PanelUsuarios extends JPanel{
 	Window ventanaP = SwingUtilities.getWindowAncestor(PanelUsuarios.this);
 	private ButtonGroup roles =  new ButtonGroup();
 	static Connection con = DatabaseConnection.getInstance().getConnection();
+	static ArrayList <Empleado> listaUsuarios = new ArrayList<Empleado>();
 
 	
 	public PanelUsuarios() {
@@ -138,7 +142,9 @@ public class PanelUsuarios extends JPanel{
                 return false;
             }
         };
-		cargarUsuarios(); ///
+        cargarUsuariosDesdeDB();
+        mostrarUsuariosEnTabla();
+		//cargarUsuarios(); ///
 		table_1.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer("Editar", new Color(100, 200, 255)));
 		table_1.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer("Eliminar", new Color(255, 100, 100)));
         
@@ -157,7 +163,8 @@ public class PanelUsuarios extends JPanel{
                     String rol = (String) table_1.getValueAt(fila, 5);
                     
                     VentanaEditar(idUsuario, nombre, apellido, correo, usuario, rol);
-                    cargarUsuarios();
+                    //cargarUsuarios();
+                    mostrarUsuariosEnTabla(); 
                 }else if(columna == 7) {
                 	int idUsuario = (int) table_1.getValueAt(fila, 0);
                 	int confirmacion = JOptionPane.showConfirmDialog(null, 
@@ -166,7 +173,7 @@ public class PanelUsuarios extends JPanel{
                             JOptionPane.YES_NO_OPTION);
                 	if (confirmacion == JOptionPane.YES_OPTION) {
                         eliminarUsuario(idUsuario);
-                        cargarUsuarios();
+                        mostrarUsuariosEnTabla();
                     }
                 }
             }
@@ -220,7 +227,7 @@ public class PanelUsuarios extends JPanel{
 	    if (!faltanDatos(nombre, apellido, correo, rol, usuario, password)) {
 	        String sql = "INSERT INTO usuarios (username, password, rol, nombre, apellidos, correo) VALUES (?, ?, ?, ?, ?, ?)";
 
-	        try (PreparedStatement ps = con.prepareStatement(sql)) {
+	        try (PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 	            ps.setString(1, usuario);
 	            ps.setString(2, passSHA);
 	            ps.setString(3, rol);
@@ -228,9 +235,17 @@ public class PanelUsuarios extends JPanel{
 	            ps.setString(5, apellido);
 	            ps.setString(6, correo);
 
-	            ps.executeUpdate();
-	            clear();
-	            cargarUsuarios();
+	           int filas = ps.executeUpdate();
+	           if (filas > 0) {
+	                ResultSet generatedKeys = ps.getGeneratedKeys();
+	                if (generatedKeys.next()) {
+	                    int id = generatedKeys.getInt(1);
+
+	                    listaUsuarios.add(new Empleado(id, nombre, apellido, correo, usuario, rol));
+	                    mostrarUsuariosEnTabla(); 
+	                    clear();
+	                }
+	           }
 	        } catch (SQLException e) {
 	            JOptionPane.showMessageDialog(ventanaP, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        }
@@ -238,7 +253,7 @@ public class PanelUsuarios extends JPanel{
 	        JOptionPane.showMessageDialog(ventanaP, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
 	    }
 	}
-	
+	/*
 	 static void cargarUsuarios() {
 	    modeloUsuario.setRowCount(0);
 
@@ -262,7 +277,45 @@ public class PanelUsuarios extends JPanel{
 	        JOptionPane.showMessageDialog(null, "Error al cargar usuarios: " + e.getMessage());
 	    }
 	}
-		
+	*/
+	
+	private void cargarUsuariosDesdeDB() {
+	    listaUsuarios.clear();
+
+	    try {
+	        String query = "SELECT id_usuario, nombre, apellidos, correo, username, rol FROM usuarios";
+	        PreparedStatement statement = con.prepareStatement(query);
+	        ResultSet resultSet = statement.executeQuery();
+
+	        while (resultSet.next()) {
+	            int id = resultSet.getInt("id_usuario");
+	            String nombre = resultSet.getString("nombre");
+	            String apellido = resultSet.getString("apellidos");
+	            String correo = resultSet.getString("correo");
+	            String usuario = resultSet.getString("username");
+	            String rol = resultSet.getString("rol");
+
+	            listaUsuarios.add(new Empleado(id, nombre, apellido, correo, usuario, rol));
+	        }
+
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(null, "Error al cargar usuarios: " + e.getMessage());
+	    }
+	}
+	
+	public static void mostrarUsuariosEnTabla() {
+	    modeloUsuario.setRowCount(0);
+
+	    for (Empleado emp : listaUsuarios) {
+	        modeloUsuario.addRow(new Object[]{
+	            emp.getId(), emp.getNombre(), emp.getApellido(),
+	            emp.getEmail(), emp.getUsername(), emp.getRol(),
+	            "Editar", "Eliminar"
+	        });
+	    }
+	}
+	
+	
 	private void eliminarUsuario(int idUsuario) {
 		String sql = "DELETE FROM usuarios WHERE id_usuario = ?";
 		
@@ -275,10 +328,19 @@ public class PanelUsuarios extends JPanel{
 	        } else {
 	            JOptionPane.showMessageDialog(null, "No se pudo eliminar el usuario.");
 	        }
+			
+			for(Empleado x : listaUsuarios) {
+				if (x.getId() == idUsuario) {
+					listaUsuarios.remove(x);
+					break;
+				}
+			}
+			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "Error al eliminar usuario: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
+		
 	}
 	
 	public void clear() {
