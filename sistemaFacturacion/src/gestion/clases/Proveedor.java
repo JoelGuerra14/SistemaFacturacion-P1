@@ -1,28 +1,26 @@
 package gestion.clases;
 
-import java.util.ArrayList;
-
 public class Proveedor {
 
-	private String id;
+	private int id;
 	private String nombre;
-	private String contacto;
-	
-	//ArrayList <Producto> listaProductos = new ArrayList<>();
-	
+	private String telefono;
+	private String direccion;
+
 	// Constructor
-	public Proveedor (String id, String nombre, String contacto) {
+	public Proveedor (int id, String nombre, String telefono, String direccion) {
 		this.setId(id);
 		this.setNombre(nombre);
-		this.setContacto(contacto);
+		this.setTelefono(telefono);
+		this.direccion = direccion;
 	}
 
 	// Getters y Setters
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -34,12 +32,20 @@ public class Proveedor {
 		this.nombre = nombre;
 	}
 
-	public String getContacto() {
-		return contacto;
+	public String getTelefono() {
+		return telefono;
 	}
 
-	public void setContacto(String contacto) {
-		this.contacto = contacto;
+	public void setTelefono(String telefono) {
+		this.telefono = telefono;
+	}
+
+	public String getDireccion() {
+		return direccion;
+	}
+
+	public void setDireccion(String direccion) {
+		this.direccion = direccion;
 	}
 	
 }
