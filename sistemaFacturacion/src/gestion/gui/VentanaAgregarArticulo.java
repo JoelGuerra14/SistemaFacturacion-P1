@@ -26,7 +26,7 @@ public class VentanaAgregarArticulo extends JFrame{
 	private JTable tabla;
 	private DefaultTableModel modelo;
 	private PanelVentas ventanaP;
-	public Connection con = DatabaseConnection.getConnection();
+	Connection con = DatabaseConnection.getInstance().getConnection();
 	
 	/**
 	 * 

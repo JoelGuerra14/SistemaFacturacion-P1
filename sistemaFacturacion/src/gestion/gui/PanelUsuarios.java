@@ -45,8 +45,7 @@ public class PanelUsuarios extends JPanel{
 	JRadioButton rdbAdmin, rdbEmpleado;
 	Window ventanaP = SwingUtilities.getWindowAncestor(PanelUsuarios.this);
 	private ButtonGroup roles =  new ButtonGroup();
-	private static Connection con = DatabaseConnection.getConnection();
-	//EditUserFrame editFrame;
+	static Connection con = DatabaseConnection.getInstance().getConnection();
 
 	
 	public PanelUsuarios() {
@@ -217,7 +216,6 @@ public class PanelUsuarios extends JPanel{
 	    String password = new String(usertfCont.getPassword());
 	    Login loginxd = new Login();
 	    String passSHA = loginxd.generarHashSHA256(password);
-	    
 
 	    if (!faltanDatos(nombre, apellido, correo, rol, usuario, password)) {
 	        String sql = "INSERT INTO usuarios (username, password, rol, nombre, apellidos, correo) VALUES (?, ?, ?, ?, ?, ?)";
@@ -241,7 +239,7 @@ public class PanelUsuarios extends JPanel{
 	    }
 	}
 	
-	static void cargarUsuarios() {
+	 static void cargarUsuarios() {
 	    modeloUsuario.setRowCount(0);
 
 	    try {

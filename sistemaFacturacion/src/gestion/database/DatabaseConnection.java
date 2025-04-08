@@ -6,40 +6,43 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-	private static final String URL = "jdbc:mysql://localhost:3306/sistemafacturacionbd";
-	private static final String USER = "root";
-	private static final String PASSWORD = "j16o14s12e";
-	private static Connection connection = null;
-	
-    static {
+    private static final String URL = "jdbc:mysql://localhost:3306/sistemafacturacionbd";
+    private static final String USER = "root";
+    private static final String PASSWORD = "Enfoque07@";
+
+    private Connection connection;
+    private static DatabaseConnection instance;
+
+    private DatabaseConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-        	e.printStackTrace();
-            throw new RuntimeException("Error al cargar el driver JDBC", e);
+            connection = DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error al conectar con la base de datos", e);
         }
     }
-	
-	public static Connection getConnection(){
-		if (connection == null ) {
-			try {
-				connection = DriverManager.getConnection(URL, USER, PASSWORD);
-			}catch(SQLException e){
-				System.err.println("Error SQL: " + e.getMessage());
-			}
-		}
-		return connection;
-	}
-	
-	public static void close() {
-		if (connection != null) {
-			try {
-				connection.close();
-				connection = null;
-			}catch(SQLException e){
-				System.err.println("Error SQL: " + e.getMessage());
-			}
-		}
-	}
-	
+    
+    public static synchronized DatabaseConnection getInstance() {
+        if (instance == null) {
+            instance = new DatabaseConnection();
+        }
+        return instance;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+                connection = null;
+                instance = null;
+            } catch (SQLException e) {
+                System.err.println("Error al cerrar la conexión: " + e.getMessage());
+            }
+        }
+    }
 }

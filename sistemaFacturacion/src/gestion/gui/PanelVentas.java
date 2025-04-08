@@ -55,8 +55,8 @@ public class PanelVentas extends JPanel {
 	private JTextField tfSubTotal;
 	private JTextField tfImpuesto;
 	private JTextField tfTotalFactura;
-	private static Connection con = DatabaseConnection.getConnection();
 	private JTextField tfCodigo;
+	Connection con = DatabaseConnection.getInstance().getConnection();
 	
 	public PanelVentas() {
 		setBackground(new Color(255, 255, 255));

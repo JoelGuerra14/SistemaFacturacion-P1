@@ -26,7 +26,7 @@ import java.awt.event.ActionEvent;
 public class VentanaEditarUsuario extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	public Connection con = DatabaseConnection.getConnection();
+	Connection con = DatabaseConnection.getInstance().getConnection();
 	private JPanel contentPane;
 	private JTextField tNombre;
 	private JTextField tUsuario;
@@ -125,7 +125,6 @@ public class VentanaEditarUsuario extends JFrame {
 			        String nuevoUsuario = tUsuario.getText();
 			        String nuevoRol = rdbAdmin.isSelected() ? "admin" : "empleado";
 
-			        Connection con = DatabaseConnection.getConnection();
 			        String sql = "UPDATE usuarios SET nombre=?, apellidos=?, correo=?, username=?, rol=? WHERE id_usuario=?";
 			        
 			        PreparedStatement ps = con.prepareStatement(sql);

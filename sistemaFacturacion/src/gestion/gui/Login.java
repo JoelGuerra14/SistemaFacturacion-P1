@@ -29,9 +29,7 @@ public class Login {
 	private JFrame frame;
 	private JPasswordField passwordField;
 	private JTextField usuarioField;
-	private Connection con = DatabaseConnection.getConnection();
 
-	
 	public JFrame getFrame() {
 		return this.frame;
 	}
@@ -108,6 +106,7 @@ public class Login {
 		String passwordHash = generarHashSHA256(password);
 		String sql = "SELECT username, password, rol FROM usuarios where username= '"+usuario+"'";
 		
+		Connection con = DatabaseConnection.getInstance().getConnection();
 		try (PreparedStatement ps = con.prepareStatement(sql);){
 			ResultSet rs = ps.executeQuery(sql);
 			
