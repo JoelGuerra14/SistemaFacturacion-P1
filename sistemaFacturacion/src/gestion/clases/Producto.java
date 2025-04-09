@@ -1,36 +1,40 @@
 package gestion.clases;
 
-public abstract class Producto {
+import java.util.ArrayList;
 
-	private String id;
+public class Producto {
+
+	private int id;
 	private String nombre;
 	private double precio;
 	private int stock;
-	private Categoria categoria;
 	private Proveedor proveedor;
+	private int codigo;
+	public static ArrayList<Producto> listaProductos = new ArrayList<Producto>();
 	
 	// Constructores
-	public Producto(String id, String nombre, double precio, int stock) {
+	public Producto(int id, String nombre, double precio, int stock, int codigo) {
 		this.id = id;
 		this.nombre = nombre;
 		this.precio = precio;
 		this.stock = stock;
+		this.codigo = codigo;
 	}
-	public Producto(String id, String nombre, double precio, int stock, Categoria categoria, Proveedor proveedor) {
+	public Producto(int id, String nombre, double precio, int stock, int codigo, Proveedor proveedor) {
 		this.id = id;
 		this.nombre = nombre;
 		this.precio = precio;
 		this.stock = stock;
-		this.categoria = categoria;
+		this.codigo = codigo;
 		this.proveedor = proveedor;
 	}
 
 	// Getters y Setters
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -58,14 +62,6 @@ public abstract class Producto {
 		this.stock = stock;
 	}
 
-	public Categoria getCategoria() {
-		return categoria;
-	}
-
-	public void setCategoria(Categoria categoria) {
-		this.categoria = categoria;
-	}
-
 	public Proveedor getProveedor() {
 		return proveedor;
 	}
@@ -74,13 +70,10 @@ public abstract class Producto {
 		this.proveedor = proveedor;
 	}
 	
-	//Metodos
-	
-	public void actualizarStock() {
-		
+	public int getCodigo() {
+		return codigo;
 	}
-	
-	public void mostrarInfo() {
-		
+	public void setCodigo(int codigo) {
+		this.codigo = codigo;
 	}
 }

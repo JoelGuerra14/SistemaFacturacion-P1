@@ -1,11 +1,13 @@
 package gestion.clases;
 
 public abstract class Usuario {
+	protected int id;
 	protected String nombre;
 	protected String apellido;
 	protected String email;
 	
-	public Usuario(String nombre, String apellido, String email) {
+	public Usuario(int id, String nombre, String apellido, String email) {
+		this.id = id;
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.email = email;
@@ -17,6 +19,14 @@ public abstract class Usuario {
 		this.email = "N/A";
 	}
 	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getNombre() {
 		return nombre;
 	}

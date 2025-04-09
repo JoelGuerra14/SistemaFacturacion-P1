@@ -14,6 +14,11 @@ public class Proveedor {
 		this.setTelefono(telefono);
 		this.direccion = direccion;
 	}
+	
+	public Proveedor (int id, String nombre) {
+		this.setId(id);
+		this.setNombre(nombre);
+	}
 
 	// Getters y Setters
 	public int getId() {
@@ -47,5 +52,8 @@ public class Proveedor {
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
-	
+	@Override
+	public String toString() {
+		return nombre;
+	}
 }

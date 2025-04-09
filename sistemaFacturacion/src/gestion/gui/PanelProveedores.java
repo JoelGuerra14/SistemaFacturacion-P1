@@ -30,8 +30,10 @@ import gestion.clases.Empleado;
 import gestion.clases.Proveedor;
 import gestion.database.DatabaseConnection;
 import gestion.util.ButtonRenderer;
+import gestion.util.Colors;
+import gestion.util.GradientPanel;
 
-public class PanelProveedores extends JPanel{
+public class PanelProveedores extends GradientPanel{
 
 	/**
 	 * 
@@ -46,6 +48,7 @@ public class PanelProveedores extends JPanel{
 	private JTextField tfDireccion;
 	
 	public PanelProveedores() {
+		super(Colors.GRADIENT_START, Colors.GRADIENT_END);
 		setPreferredSize(new Dimension(775, 618));
 		setLayout(null);
 		
@@ -84,8 +87,9 @@ public class PanelProveedores extends JPanel{
 		add(tfContacto);
 		
 		JButton btnAgregar = new JButton("Agregar");
-		btnAgregar.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnAgregar.setBounds(662, 97, 92, 29);
+		btnAgregar.setBackground(Colors.PASTEL_GREEN);
+		btnAgregar.setFocusPainted(false);
 		btnAgregar.addActionListener(new ActionListener() {
 
 			@Override
@@ -116,7 +120,7 @@ public class PanelProveedores extends JPanel{
 		mostrarProveedoresEnTabla();
 		
 		tablaProveedor.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer("Editar", new Color(100, 200, 255)));
-		tablaProveedor.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer("Eliminar", new Color(255, 100, 100)));
+		tablaProveedor.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer("Eliminar", Colors.PASTEL_RED));
 		
 		tablaProveedor.addMouseListener(new MouseAdapter() {
             @Override
@@ -134,15 +138,23 @@ public class PanelProveedores extends JPanel{
                     VentanaEditar(idProveedor, nombre, telefono, direccion);
                     //cargarUsuarios();
             		mostrarProveedoresEnTabla();
-                }else if(columna == 5) {
-                	int idUsuario = (int) tablaProveedor.getValueAt(fila, 0);
-                	int confirmacion = JOptionPane.showConfirmDialog(null, 
+                } else if(columna == 5) {
+                    int idProveedor = (int) tablaProveedor.getValueAt(fila, 0);
+                    
+                    if (proveedorTieneProductosOVentas(idProveedor)) {
+                        JOptionPane.showMessageDialog(ventanaP, 
+                            "No se puede eliminar el proveedor porque tiene productos o ventas relacionadas", 
+                            "Error", 
+                            JOptionPane.WARNING_MESSAGE);
+                    } else {
+                        int confirmacion = JOptionPane.showConfirmDialog(null, 
                             "¿Estás seguro de que deseas eliminar este proveedor?", 
                             "Confirmar eliminación", 
                             JOptionPane.YES_NO_OPTION);
-                	if (confirmacion == JOptionPane.YES_OPTION) {
-                        eliminarProveedor(idUsuario);
-                		mostrarProveedoresEnTabla();
+                        if (confirmacion == JOptionPane.YES_OPTION) {
+                            eliminarProveedor(idProveedor);
+                            mostrarProveedoresEnTabla();
+                        }
                     }
                 }
             }
@@ -262,35 +274,62 @@ public class PanelProveedores extends JPanel{
 	}
 	
 	private void eliminarProveedor(int idProveedor) {
-		String sql = "DELETE FROM proveedores WHERE id_proveedor = ?";
-		
-		try(PreparedStatement ps = con.prepareStatement(sql)){
-			ps.setInt(1, idProveedor);
-			int filasAfectadas = ps.executeUpdate();
 			
-			if (filasAfectadas > 0) {
-	            JOptionPane.showMessageDialog(null, "Proveedor eliminado");
+	    String sql = "DELETE FROM proveedores WHERE id_proveedor = ?";
+	    try (PreparedStatement ps = con.prepareStatement(sql)) {
+	        ps.setInt(1, idProveedor);
+	        int filasAfectadas = ps.executeUpdate();
+
+	        if (filasAfectadas > 0) {
+	            JOptionPane.showMessageDialog(null, "Proveedor eliminado exitosamente.");
+	            listaProveedores.removeIf(p -> p.getId() == idProveedor);
 	        } else {
-	            JOptionPane.showMessageDialog(null, "No se pudo eliminar el Proveedor.");
+	            JOptionPane.showMessageDialog(null, "No se pudo eliminar el proveedor.");
 	        }
-			
-			for(Proveedor p : listaProveedores) {
-				if (p.getId() == idProveedor) {
-					listaProveedores.remove(p);
-					break;
-				}
-			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			JOptionPane.showMessageDialog(null, "Error al eliminar usuario: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-		}
-		
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(null, "Error al eliminar proveedor: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	    }
 	}
 	
 	public void clear() {
 		tfNombre.setText("");
 		tfContacto.setText("");
 		tfDireccion.setText("");
+	}
+	
+	private boolean proveedorTieneProductosOVentas(int idProveedor) {
+	    // Verificar si tiene productos asociados directamente
+	    String sqlProductos = "SELECT COUNT(*) FROM productos WHERE fk_id_proveedores = ?";
+	    
+	    // Verificar si tiene ventas asociadas (a través de productos en detalle_factura)
+	    String sqlVentas = "SELECT COUNT(*) FROM detalle_factura df " +
+	                      "JOIN productos p ON df.id_producto = p.id_producto " +
+	                      "WHERE p.fk_id_proveedores = ?";
+	    
+	    try {
+	        // Verificar productos
+	        PreparedStatement psProductos = con.prepareStatement(sqlProductos);
+	        psProductos.setInt(1, idProveedor);
+	        ResultSet rsProductos = psProductos.executeQuery();
+	        if (rsProductos.next() && rsProductos.getInt(1) > 0) {
+	            return true;
+	        }
+	        
+	        // Verificar ventas
+	        PreparedStatement psVentas = con.prepareStatement(sqlVentas);
+	        psVentas.setInt(1, idProveedor);
+	        ResultSet rsVentas = psVentas.executeQuery();
+	        if (rsVentas.next() && rsVentas.getInt(1) > 0) {
+	            return true;
+	        }
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(null, 
+	            "Error al verificar relaciones del proveedor: " + e.getMessage(), 
+	            "Error", 
+	            JOptionPane.ERROR_MESSAGE);
+	        // Si hay error en la consulta, asumimos que tiene relaciones para prevenir eliminaciones incorrectas
+	        return true;
+	    }
+	    return false;
 	}
 }

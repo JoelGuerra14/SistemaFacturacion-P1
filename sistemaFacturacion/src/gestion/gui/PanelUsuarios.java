@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -32,10 +33,12 @@ import javax.swing.table.DefaultTableModel;
 
 import gestion.database.DatabaseConnection;
 import gestion.util.ButtonRenderer;
+import gestion.util.Colors;
+import gestion.util.GradientPanel;
 import gestion.clases.Empleado;
 
 
-public class PanelUsuarios extends JPanel{
+public class PanelUsuarios extends GradientPanel{
 
 	/**
 	 * 
@@ -53,71 +56,86 @@ public class PanelUsuarios extends JPanel{
 
 	
 	public PanelUsuarios() {
+		super(Colors.GRADIENT_START, Colors.GRADIENT_END);
 		setPreferredSize(new Dimension(775, 618));
 		setLayout(null);
 		
+		JPanel panelTituloLbl = new JPanel();
+		panelTituloLbl.setBackground(new Color(95, 170, 254));
+		panelTituloLbl.setBounds(0, 0, 330, 62);
+		add(panelTituloLbl);
+		panelTituloLbl.setLayout(null);
+		
+		JLabel lblNewLabel_1_1_1 = new JLabel("  Registro de Usuarios");
+		lblNewLabel_1_1_1.setBorder(BorderFactory.createRaisedBevelBorder());
+		lblNewLabel_1_1_1.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lblNewLabel_1_1_1.setBounds(10, 11, 310, 40);
+		panelTituloLbl.add(lblNewLabel_1_1_1);
+		
 		JLabel lblNewLabel_3 = new JLabel("Nombre");
 		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel_3.setBounds(20, 48, 60, 19);
+		lblNewLabel_3.setBounds(20, 111, 60, 19);
 		add(lblNewLabel_3);
 		
 		JLabel lblNewLabel_3_1 = new JLabel("Apellido");
 		lblNewLabel_3_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel_3_1.setBounds(20, 90, 54, 19);
+		lblNewLabel_3_1.setBounds(20, 153, 54, 19);
 		add(lblNewLabel_3_1);
 		
 		JLabel lblNewLabel_3_2 = new JLabel("Correo");
 		lblNewLabel_3_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel_3_2.setBounds(20, 131, 60, 19);
+		lblNewLabel_3_2.setBounds(20, 195, 60, 19);
 		add(lblNewLabel_3_2);
 		
 		JLabel lblNewLabel_3_2_1 = new JLabel("Usuario");
 		lblNewLabel_3_2_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel_3_2_1.setBounds(263, 48, 54, 19);
+		lblNewLabel_3_2_1.setBounds(263, 111, 54, 19);
 		add(lblNewLabel_3_2_1);
 		
 		usertfNombre = new JTextField();
-		usertfNombre.setBounds(77, 46, 159, 27);
+		usertfNombre.setBounds(77, 107, 159, 27);
 		add(usertfNombre);
 		usertfNombre.setColumns(10);
 		
 		usertfApellido = new JTextField();
 		usertfApellido.setColumns(10);
-		usertfApellido.setBounds(77, 88, 159, 27);
+		usertfApellido.setBounds(77, 149, 159, 27);
 		add(usertfApellido);
 		
 		JLabel lblNewLabel_3_2_1_1 = new JLabel("Contraseña");
 		lblNewLabel_3_2_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel_3_2_1_1.setBounds(263, 90, 82, 19);
+		lblNewLabel_3_2_1_1.setBounds(263, 153, 82, 19);
 		add(lblNewLabel_3_2_1_1);
 		
 		usertfCont = new JPasswordField();
-		usertfCont.setBounds(340, 89, 159, 24);
+		usertfCont.setBounds(340, 149, 159, 24);
 		add(usertfCont);
 		
 		usertfCorreo = new JTextField();
 		usertfCorreo.setColumns(10);
-		usertfCorreo.setBounds(77, 132, 159, 27);
+		usertfCorreo.setBounds(77, 191, 159, 27);
 		add(usertfCorreo);
 		
 		usertfUsuario = new JTextField();
 		usertfUsuario.setColumns(10);
-		usertfUsuario.setBounds(314, 46, 185, 27);
+		usertfUsuario.setBounds(314, 107, 185, 27);
 		add(usertfUsuario);
 		
 		JLabel lblNewLabel_3_2_1_1_1 = new JLabel("Rol");
 		lblNewLabel_3_2_1_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel_3_2_1_1_1.setBounds(263, 135, 36, 19);
+		lblNewLabel_3_2_1_1_1.setBounds(263, 195, 36, 19);
 		add(lblNewLabel_3_2_1_1_1);
 		
 		rdbAdmin = new JRadioButton("Admin");
 		rdbAdmin.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		rdbAdmin.setBounds(298, 134, 71, 23);
+		rdbAdmin.setBounds(298, 195, 71, 23);
+		rdbAdmin.setContentAreaFilled(false);
 		add(rdbAdmin);
 		
 		rdbEmpleado = new JRadioButton("Empleado");
 		rdbEmpleado.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		rdbEmpleado.setBounds(389, 134, 95, 23);
+		rdbEmpleado.setBounds(389, 195, 95, 23);
+		rdbEmpleado.setContentAreaFilled(false);
 		add(rdbEmpleado);
 		
 		roles.add(rdbAdmin);
@@ -146,7 +164,7 @@ public class PanelUsuarios extends JPanel{
         mostrarUsuariosEnTabla();
 		//cargarUsuarios(); ///
 		table_1.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer("Editar", new Color(100, 200, 255)));
-		table_1.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer("Eliminar", new Color(255, 100, 100)));
+		table_1.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer("Eliminar", Colors.PASTEL_RED));
         
         table_1.addMouseListener(new MouseAdapter() {
             @Override
@@ -187,6 +205,8 @@ public class PanelUsuarios extends JPanel{
 		
 		JButton btnAgregarUsuario = new JButton("Agregar");
 		btnAgregarUsuario.setBounds(654, 209, 101, 27);
+		btnAgregarUsuario.setBackground(Colors.PASTEL_GREEN);
+		btnAgregarUsuario.setFocusPainted(false);
 		btnAgregarUsuario.addActionListener(new ActionListener() {
 
 			@Override
@@ -253,31 +273,6 @@ public class PanelUsuarios extends JPanel{
 	        JOptionPane.showMessageDialog(ventanaP, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
 	    }
 	}
-	/*
-	 static void cargarUsuarios() {
-	    modeloUsuario.setRowCount(0);
-
-	    try {
-	        String query = "SELECT id_usuario, nombre, apellidos, correo, username, rol FROM usuarios";
-	        PreparedStatement statement = con.prepareStatement(query);
-	        ResultSet resultSet = statement.executeQuery();
-
-	        while (resultSet.next()) {
-	            int id = resultSet.getInt("id_usuario");
-	            String nombre = resultSet.getString("nombre");
-	            String apellido = resultSet.getString("apellidos");
-	            String correo = resultSet.getString("correo");
-	            String usuario = resultSet.getString("username");
-	            String rol = resultSet.getString("rol");
-
-	            modeloUsuario.addRow(new Object[]{id, nombre, apellido, correo, usuario, rol, "Editar", "Eliminar"});
-	        }
-
-	    } catch (SQLException e) {
-	        JOptionPane.showMessageDialog(null, "Error al cargar usuarios: " + e.getMessage());
-	    }
-	}
-	*/
 	
 	private void cargarUsuariosDesdeDB() {
 	    listaUsuarios.clear();

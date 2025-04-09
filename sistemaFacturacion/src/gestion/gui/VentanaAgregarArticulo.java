@@ -18,10 +18,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import gestion.clases.Producto;
 import gestion.database.DatabaseConnection;
 import gestion.util.ButtonRenderer;
+import gestion.util.Colors;
+import gestion.util.GradientFrame;
 
-public class VentanaAgregarArticulo extends JFrame{
+public class VentanaAgregarArticulo extends GradientFrame{
 
 	private JTable tabla;
 	private DefaultTableModel modelo;
@@ -34,6 +37,7 @@ public class VentanaAgregarArticulo extends JFrame{
 	private static final long serialVersionUID = 1L;
 
 	public VentanaAgregarArticulo(PanelVentas ventanaP) {
+        super(Colors.GRADIENT_START, Colors.GRADIENT_END);
 		this.ventanaP = ventanaP;
 		setBounds(100, 100, 741, 535);
 		getContentPane().setLayout(null);
@@ -92,13 +96,21 @@ public class VentanaAgregarArticulo extends JFrame{
         });
 		
         scrollPane.setViewportView(tabla);
-        cargarProductos();
+        cargarListaProductos();
+        cargarTablaProductos();
 		
 	}
 	
-	public void cargarProductos() {
+	public void cargarTablaProductos() {
 	    modelo.setRowCount(0);
 
+	    for (Producto p : Producto.listaProductos) {
+	    	modelo.addRow(new Object[]{p.getId(), p.getNombre(), p.getPrecio(), p.getStock(), p.getCodigo(), "Agregar"});
+	    }
+	}
+	
+	public void cargarListaProductos() {
+		Producto.listaProductos.clear();
 	    try {
 	        String query = "SELECT id_producto,  nombre, precio, stock, codigo FROM productos";
 	        PreparedStatement statement = con.prepareStatement(query);
@@ -111,11 +123,11 @@ public class VentanaAgregarArticulo extends JFrame{
 	            int stock = resultSet.getInt("stock");
 	            int codigo = resultSet.getInt("codigo");
 
-	            modelo.addRow(new Object[]{id, nombre, precio, stock, codigo, "Agregar"});
+	            Producto.listaProductos.add(new Producto(id, nombre, precio, stock, codigo));
 	        }
 
 	    } catch (SQLException e) {
-	        JOptionPane.showMessageDialog(null, "Error al cargar productos: " + e.getMessage());
+	        JOptionPane.showMessageDialog(null, "Error al cargar lista de productos: " + e.getMessage());
 	    }
 	}
 }

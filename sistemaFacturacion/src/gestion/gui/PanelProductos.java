@@ -1,42 +1,62 @@
 package gestion.gui;
 
-import java.awt.Color;
+import java.awt.Color; 
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
-public class PanelProductos extends JPanel {
+import gestion.clases.Producto;
+import gestion.clases.Proveedor;
+import gestion.database.DatabaseConnection;
+import gestion.util.ButtonRenderer;
+import gestion.util.Colors;
+import gestion.util.GradientPanel;
+
+public class PanelProductos extends GradientPanel {
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JTextField textField;
-    private JTextField textField_1;
-    private JTextField textField_2;
-    private JTextField textField_3;
-    private JTable table;
+	private JTextField tIdProducto;
+    private JTextField tNombre;
+    private JTextField tPrecio;
+    private JTextField tStock;
+	JComboBox<Proveedor> cbProveedor;
+    private static JTable table;
+    static DefaultTableModel modeloProd; 
+    private JMenu mnNewMenu_1, mnNewMenu_2;
+    private JMenuItem mntmNewMenuItem_1, mntmNewMenuItem_2;
+    Connection con = DatabaseConnection.getInstance().getConnection();
+    static ArrayList<Producto> productos = new ArrayList<Producto>();
 
     public PanelProductos() {
+		super(Colors.GRADIENT_START, Colors.GRADIENT_END);
         setPreferredSize(new Dimension(775, 618));
         setLayout(null);
 
@@ -55,33 +75,33 @@ public class PanelProductos extends JPanel {
         lblNewLabel_1.setBounds(10, 11, 310, 40);
         panelTituloLbl.add(lblNewLabel_1);
 		
-        JLabel lblNewLabel = new JLabel("ID");
-        lblNewLabel.setBounds(24, 95, 22, 29);
+        JLabel lblNewLabel = new JLabel("Codigo");
+        lblNewLabel.setBounds(24, 95, 55, 29);
         lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
         add(lblNewLabel);
         
-        textField = new JTextField();
-        textField.setBounds(56, 95, 73, 24);
-        textField.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        add(textField);
-        textField.setColumns(10);
+        tIdProducto = new JTextField();
+        tIdProducto.setBounds(84, 98, 73, 24);
+        tIdProducto.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        add(tIdProducto);
+        tIdProducto.setColumns(10);
         
-        textField_1 = new JTextField();
-        textField_1.setBounds(84, 130, 132, 24);
-        textField_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        textField_1.setColumns(10);
-        add(textField_1);
+        tNombre = new JTextField();
+        tNombre.setBounds(84, 130, 132, 24);
+        tNombre.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        tNombre.setColumns(10);
+        add(tNombre);
         
         JLabel lblNombre = new JLabel("Nombre");
         lblNombre.setBounds(24, 126, 55, 29);
         lblNombre.setFont(new Font("Tahoma", Font.PLAIN, 14));
         add(lblNombre);
         
-        textField_2 = new JTextField();
-        textField_2.setBounds(286, 99, 134, 24);
-        textField_2.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        textField_2.setColumns(10);
-        add(textField_2);
+        tPrecio = new JTextField();
+        tPrecio.setBounds(286, 99, 134, 24);
+        tPrecio.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        tPrecio.setColumns(10);
+        add(tPrecio);
         
         JLabel lblNombre_1 = new JLabel("Precio");
         lblNombre_1.setBounds(226, 95, 55, 29);
@@ -93,48 +113,33 @@ public class PanelProductos extends JPanel {
         lblNombre_1_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
         add(lblNombre_1_1);
         
-        textField_3 = new JTextField();
-        textField_3.setBounds(286, 133, 134, 24);
-        textField_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        textField_3.setColumns(10);
-        add(textField_3);
+        tStock = new JTextField();
+        tStock.setBounds(286, 133, 134, 24);
+        tStock.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        tStock.setColumns(10);
+        add(tStock);
         
-        JComboBox comboBox = new JComboBox();
-        comboBox.setBounds(502, 95, 115, 29);
-        comboBox.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        comboBox.setModel(new DefaultComboBoxModel(new String[] {"Categoria 1", "Categoria 2", "Categoria 3", "Categoria 4"}));
-        add(comboBox);
+        cbProveedor = new JComboBox<Proveedor>();
+        cbProveedor.setBounds(440, 127, 115, 29);
+        cbProveedor.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        add(cbProveedor);
         
-        JLabel lblCategoria = new JLabel("Categoria");
-        lblCategoria.setBounds(430, 95, 65, 29);
-        lblCategoria.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        add(lblCategoria);
-        
-        JComboBox comboBox_1 = new JComboBox();
-        comboBox_1.setBounds(502, 127, 115, 29);
-        comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"Proveedor 1", "Proveedor 2", "Proveedor 3"}));
-        comboBox_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        add(comboBox_1);
         
         JLabel lblProveedor = new JLabel("Proveedor");
-        lblProveedor.setBounds(430, 127, 65, 29);
+        lblProveedor.setBounds(442, 95, 65, 29);
         lblProveedor.setFont(new Font("Tahoma", Font.PLAIN, 14));
         add(lblProveedor);
         
-        JButton btnNewButton = new JButton("Agregar");
-        btnNewButton.setBounds(138, 178, 92, 29);
-        btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        add(btnNewButton);
-        
-        JButton btnEditar = new JButton("Editar");
-        btnEditar.setBounds(295, 178, 92, 29);
-        btnEditar.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        add(btnEditar);
-        
-        JButton btnEliminar = new JButton("Eliminar");
-        btnEliminar.setBounds(460, 178, 187, 29);
-        btnEliminar.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        add(btnEliminar);
+        JButton registrar = new JButton("Agregar");
+        registrar.setBackground(Colors.PASTEL_GREEN);
+        registrar.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		agregarProducto();
+        		actualizarTablaDesdeArrayList();
+        	}
+        });
+        registrar.setBounds(673, 194, 92, 29);
+        add(registrar);
         
         JSeparator separator = new JSeparator();
         separator.setBounds(0, 226, 765, 2);
@@ -145,14 +150,55 @@ public class PanelProductos extends JPanel {
         scrollPane.setBounds(10, 238, 755, 370);
         add(scrollPane);
         
-        table = new JTable();
-        table.setModel(new DefaultTableModel(
-            new Object[][] {},
-            new String[] {"ID", "Nombre", "Precio", "Stock", "Categoria", "Proveedor"}
-        ));
-        scrollPane.setViewportView(table);
-        
+        String[] columnasProd = {"ID", "Codigo","Nombre", "Precio", "Stock", "Proveedor", "Editar", "Eliminar"};
+        modeloProd = new DefaultTableModel(columnasProd, 0);
+        table = new JTable(modeloProd) {
+        	/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
+			@Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+		table.getColumnModel().getColumn(6).setCellRenderer(new ButtonRenderer("Editar", new Color(100, 200, 255)));
+		table.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer("Eliminar", new Color(255, 100, 100)));
+        
+		table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int fila = table.rowAtPoint(e.getPoint());
+                int columna = table.columnAtPoint(e.getPoint());
+
+                if (columna == 6) {  // Editar
+                    int idProducto = (int) table.getValueAt(fila, 0);
+                    int codigo = (int) table.getValueAt(fila, 1);
+                    String nombre = (String) table.getValueAt(fila, 2);
+                    double precio = (double) table.getValueAt(fila, 3);
+                    int stock = (int) table.getValueAt(fila, 4);
+                    Proveedor proveedor = (Proveedor) table.getValueAt(fila, 5);
+
+                    // Abrir ventana de edición con los valores actuales
+                    ventanaEditarProducto(idProducto, nombre, precio, stock, codigo, proveedor);
+                } else if (columna == 7) {  // Eliminar
+                    int idProducto = (int) table.getValueAt(fila, 0);
+                    int confirmacion = JOptionPane.showConfirmDialog(null, 
+                                "¿Estás seguro de que deseas eliminar este producto?", 
+                                "Confirmar eliminación", 
+                                JOptionPane.YES_NO_OPTION);
+                    if (confirmacion == JOptionPane.YES_OPTION) {
+                        eliminarProducto(idProducto);
+                    }
+                }
+            }
+        });
+		
+		cargarProveedoresDesdeBD();
+        cargarProductosDesdeBD();
+        
+		scrollPane.setViewportView(table);
         
         // ============ MENÚ ============
         JMenuBar menuBar = new JMenuBar();
@@ -179,17 +225,188 @@ public class PanelProductos extends JPanel {
         });
         mnNewMenu.add(cerrarSesionMenu);
         
-        JMenu mnNewMenu_1 = new JMenu("Ayuda");
+        mnNewMenu_1 = new JMenu("Ayuda");
         menuBar.add(mnNewMenu_1);
         
-        JMenuItem mntmNewMenuItem_1 = new JMenuItem("Documento Ayuda");
+        mntmNewMenuItem_1 = new JMenuItem("Documento Ayuda");
         mnNewMenu_1.add(mntmNewMenuItem_1);
         
-        JMenu mnNewMenu_2 = new JMenu("Mas opciones");
+        mnNewMenu_2 = new JMenu("Mas opciones");
         menuBar.add(mnNewMenu_2);
         
-        JMenuItem mntmNewMenuItem_2 = new JMenuItem("Crear Categoria");
+        mntmNewMenuItem_2 = new JMenuItem("Crear Categoria");
         mnNewMenu_2.add(mntmNewMenuItem_2);
 
+    }
+    
+    private void ventanaEditarProducto(int idProducto, String nombre, Double precio, int stock, int codigo, Proveedor prov) {
+        VentanaEditarProducto ve = new VentanaEditarProducto();
+        
+        Producto producto = new Producto(idProducto, nombre, precio, stock, codigo, prov);
+        ve.setDatos(producto);
+        ve.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        ve.setVisible(true);
+    }
+    
+    private boolean camposNulos() {
+        // Validamos si algún campo está vacío
+        return tIdProducto.getText().isBlank() || 
+               tNombre.getText().isBlank() || 
+               tPrecio.getText().isBlank() || 
+               tStock.getText().isBlank() || 
+               cbProveedor.getSelectedItem() == null;
+    }
+    
+    private void agregarProducto() {
+        if (camposNulos()) {
+            JOptionPane.showMessageDialog(null, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int codigoProducto = 0;
+        try {
+            codigoProducto = Integer.parseInt(tIdProducto.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "El codigo ingresado no es válido. Debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        
+        String nombreP = tNombre.getText();
+
+        // Validación del precio
+        double precioP = 0;
+        try {
+            precioP = Double.parseDouble(tPrecio.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "El precio ingresado no es válido. Debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int stock = 0;
+        try {
+            stock = Integer.parseInt(tStock.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "El stock debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Proveedor proveedorSeleccionado = (Proveedor) cbProveedor.getSelectedItem();
+        if (proveedorSeleccionado == null) {
+            JOptionPane.showMessageDialog(null, "Debes seleccionar un proveedor.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int idProveedor = proveedorSeleccionado.getId();
+        String sql = "INSERT INTO productos (codigo, nombre, precio, stock, fk_id_proveedores) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, codigoProducto);
+            ps.setString(2, nombreP);
+            ps.setDouble(3, precioP);
+            ps.setInt(4, stock);
+            ps.setInt(5, idProveedor);
+
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                // Obtener el ID generado por la BD
+                ResultSet rs = ps.getGeneratedKeys();
+                int idGenerado = 0;
+                if (rs.next()) {
+                    idGenerado = rs.getInt(1);
+                }
+                Producto nuevo = new Producto(idGenerado, nombreP, precioP, stock, codigoProducto,proveedorSeleccionado);
+                productos.add(nuevo);
+                actualizarTablaDesdeArrayList();
+                JOptionPane.showMessageDialog(null, "Producto insertado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se insertó el producto.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public static void actualizarTablaDesdeArrayList() {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        model.setRowCount(0); // Limpiar tabla
+
+        for (Producto p : productos) {
+            Object[] fila = {
+                p.getId(),
+                p.getCodigo(),
+                p.getNombre(),
+                p.getPrecio(),
+                p.getStock(),
+                p.getProveedor(),
+                "Editar", "Eliminar"
+            };
+            model.addRow(fila);
+        }
+    }
+    
+    private void cargarProveedoresDesdeBD() {
+        cbProveedor.removeAllItems();
+        String sql = "SELECT id_proveedor, nombre FROM proveedores";
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("id_proveedor");
+                String nombre = rs.getString("nombre");
+                cbProveedor.addItem(new Proveedor(id, nombre));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error cargando proveedores: " + e.getMessage());
+        }
+    }
+    
+    private void cargarProductosDesdeBD() {
+        productos.clear();
+        
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.stock, pr.nombre AS proveedor, p.fk_id_proveedores, p.codigo " +
+                "FROM productos p LEFT JOIN proveedores pr ON p.fk_id_proveedores = pr.id_proveedor";
+        
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                int idProducto = rs.getInt("id_producto");
+                String nombre = rs.getString("nombre");
+                double precio = rs.getDouble("precio");
+                int stock = rs.getInt("stock");
+                String nombreProveedor = rs.getString("proveedor");
+                int idProveedor = rs.getInt("fk_id_proveedores");
+                int codigoProducto = rs.getInt("codigo");  //carga el código del producto
+
+                Proveedor proveedor = new Proveedor(idProveedor, nombreProveedor);
+
+                Producto producto = new Producto(idProducto, nombre, precio, stock, codigoProducto, proveedor);
+                productos.add(producto);
+            }
+            actualizarTablaDesdeArrayList();
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error cargando productos: " + e.getMessage());
+        }
+    }
+    
+    private void eliminarProducto(int idProducto) {
+        String sql = "DELETE FROM productos WHERE id_producto = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idProducto);
+
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                productos.removeIf(producto -> producto.getId() == idProducto);
+                actualizarTablaDesdeArrayList();
+                JOptionPane.showMessageDialog(null, "Producto eliminado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo eliminar el producto.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al eliminar el producto: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

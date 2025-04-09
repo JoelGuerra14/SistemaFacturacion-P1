@@ -9,11 +9,18 @@ import java.sql.PreparedStatement;
 
 import gestion.clases.Empleado;
 import gestion.database.DatabaseConnection;
+import gestion.util.Colors;
+import gestion.util.GradientFrame;
+
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
@@ -23,11 +30,11 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class VentanaEditarUsuario extends JFrame {
+public class VentanaEditarUsuario extends GradientFrame {
 
 	private static final long serialVersionUID = 1L;
 	Connection con = DatabaseConnection.getInstance().getConnection();
-	private JPanel contentPane;
+	private JPanel panelContenido;
 	private JTextField tNombre;
 	private JTextField tUsuario;
 	private JTextField tApellido;
@@ -40,16 +47,32 @@ public class VentanaEditarUsuario extends JFrame {
 	private String idUsuario; //para la funcion setData
 
 	public VentanaEditarUsuario() {
+        super(Colors.GRADIENT_START, Colors.GRADIENT_END);
 		setBounds(100, 100, 548, 265);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panelContenido = new JPanel(new BorderLayout()) {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
-		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
-		
-		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.CENTER);
-		panel.setLayout(null);
+			@Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                GradientPaint gradient = new GradientPaint(
+                    0, 0, Colors.GRADIENT_START, 
+                    getWidth(), getHeight(), Colors.GRADIENT_END
+                );
+                g2d.setPaint(gradient);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        panelContenido.setBorder(new EmptyBorder(5, 5, 5, 5));
+        
+        // Panel para los componentes
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        panel.setOpaque(false); // Hacemos transparente este panel
 
 		JLabel nombreLbl = new JLabel("Nombre");
 		nombreLbl.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -107,12 +130,14 @@ public class VentanaEditarUsuario extends JFrame {
 		
 		rdbAdmin = new JRadioButton("Admin");
 		rdbAdmin.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		rdbAdmin.setContentAreaFilled(false);
 		rdbAdmin.setBounds(288, 120, 71, 23);
 		panel.add(rdbAdmin);
 		
 		rdbEmpleado = new JRadioButton("Empleado");
 		rdbEmpleado.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		rdbEmpleado.setBounds(379, 120, 95, 23);
+		rdbEmpleado.setContentAreaFilled(false);
 		panel.add(rdbEmpleado);
 		
 		confirmar = new JButton("Confirmar");
@@ -180,6 +205,9 @@ public class VentanaEditarUsuario extends JFrame {
 		bg = new ButtonGroup();
 		bg.add(rdbAdmin);
 		bg.add(rdbEmpleado);
+		
+        panelContenido.add(panel, BorderLayout.CENTER);
+        setContentPane(panelContenido);
 
 	}
 	

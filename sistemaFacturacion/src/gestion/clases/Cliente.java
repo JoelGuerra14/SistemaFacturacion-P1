@@ -4,8 +4,8 @@ public class Cliente extends Usuario{
 	
 	private String telefono;
 	
-	public Cliente (String nombre, String apellido, String email, String telefono) {
-		super(nombre, apellido, email);
+	public Cliente (int id, String nombre, String apellido, String email, String telefono) {
+		super(id, nombre, apellido, email);
 		this.telefono = telefono;
 	}
 	
@@ -25,6 +25,6 @@ public class Cliente extends Usuario{
 	
 	@Override
 	public String toString() {
-	    return nombre;
+	    return nombre + " " + apellido;
 	}
 }

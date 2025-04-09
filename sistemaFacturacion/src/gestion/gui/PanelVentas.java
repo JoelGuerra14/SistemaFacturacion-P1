@@ -3,21 +3,30 @@ package gestion.gui;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -25,8 +34,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 
 import gestion.clases.Cliente;
+import gestion.clases.DetalleFactura;
+import gestion.clases.Factura;
+import gestion.clases.Producto;
 import gestion.clases.Reloj;
 import gestion.database.DatabaseConnection;
+import gestion.util.Colors;
+import gestion.util.GradientPanel;
 
 import javax.swing.JComboBox;
 import javax.swing.JSpinner;
@@ -34,7 +48,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JButton;
 
-public class PanelVentas extends JPanel {
+public class PanelVentas extends GradientPanel {
 	/**
 	 * 
 	 */
@@ -56,15 +70,24 @@ public class PanelVentas extends JPanel {
 	private JTextField tfImpuesto;
 	private JTextField tfTotalFactura;
 	private JTextField tfCodigo;
+	private JButton btnAgregar;
 	Connection con = DatabaseConnection.getInstance().getConnection();
 	
+	private Factura facturaActual;
+	private ArrayList<DetalleFactura> detallesTemporales = new ArrayList<>();
+	private Producto productoSeleccionado;
+	private boolean modoEdicion = false;
+	private int indiceEdicion;
+	
+	
 	public PanelVentas() {
-		setBackground(new Color(255, 255, 255));
+		
+		super(Colors.GRADIENT_START, Colors.GRADIENT_END);
 		setPreferredSize(new Dimension(775, 618));
 		setLayout(null);
 		
 		JPanel panelTituloLbl = new JPanel();
-		panelTituloLbl.setBackground(new Color(95, 170, 254));
+		panelTituloLbl.setBackground(Colors.PRIMARY);
 		panelTituloLbl.setBounds(0, 0, 330, 62);
 		add(panelTituloLbl);
 		panelTituloLbl.setLayout(null);
@@ -114,13 +137,26 @@ public class PanelVentas extends JPanel {
 		cbCliente = new JComboBox<>();
 		cbCliente.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		cbCliente.setBounds(207, 109, 134, 25);
+		
+		// Personalización del botón del ComboBox
+		Component[] comps = cbCliente.getComponents();
+		for (Component comp : comps) {
+		    if (comp instanceof AbstractButton) {
+		        AbstractButton button = (AbstractButton) comp;
+		        
+		        // Cambiar el color del botón
+		        button.setBackground(Colors.BONE); // O usa AppColors.COMBOBOX_BUTTON si tienes la clase
+		        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+		    }
+		}
+		
 		add(cbCliente);
 		
 		actualizarComboBox();
 		
 		
 		JPanel panel = new JPanel();
-		panel.setBackground(new Color(89, 168, 247));
+		panel.setBackground(Colors.SECONDARY);
 		panel.setBounds(10, 375, 755, 73);
 		add(panel);
 		panel.setLayout(null);
@@ -193,7 +229,8 @@ public class PanelVentas extends JPanel {
 		panel.add(tfArticulo);
 		
 		JButton btnArticulo = new JButton("New button");
-		btnArticulo.setBackground(new Color(89, 168, 247));
+		btnArticulo.setBackground(new Color(242, 235, 227));
+		btnArticulo.setFocusPainted(false);
 		btnArticulo.setBounds(124, 32, 30, 30);
 		btnArticulo.addActionListener(new ActionListener() {
 
@@ -245,8 +282,10 @@ public class PanelVentas extends JPanel {
 		
 		scrollPane.setViewportView(table);
 		
-		JButton btnAgregar = new JButton("Agregar");
+		btnAgregar = new JButton("Agregar");
 		btnAgregar.setBounds(10, 463, 98, 30);
+		btnAgregar.setBackground(Colors.PASTEL_GREEN);
+		btnAgregar.setFocusPainted(false);
 		btnAgregar.addActionListener(new ActionListener() {
 
 			@Override
@@ -260,10 +299,32 @@ public class PanelVentas extends JPanel {
 		
 		JButton btnBorrar = new JButton("Borrar");
 		btnBorrar.setBounds(110, 463, 98, 30);
+		btnBorrar.setBackground(Colors.PASTEL_RED);
+		btnBorrar.setFocusPainted(false);
+		btnBorrar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				borrarDetalle();
+			}
+			
+		});
 		add(btnBorrar);
 		
 		JButton btnEditar = new JButton("Editar");
 		btnEditar.setBounds(209, 463, 98, 30);
+		btnEditar.setBackground(Colors.PASTEL_YELLOW);
+		btnEditar.setFocusPainted(false);
+		btnEditar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				editarDetalle();
+			}
+			
+		});
 		add(btnEditar);
 		
 		JLabel lblNewLabel_2_1 = new JLabel("Sub-Total:");
@@ -304,10 +365,23 @@ public class PanelVentas extends JPanel {
 		
 		JButton btnLimpiar = new JButton("Limpiar");
 		btnLimpiar.setBounds(309, 463, 98, 30);
+		btnLimpiar.setBackground(Colors.BONE);
+		btnLimpiar.setFocusPainted(false);
+		btnLimpiar.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				limpiarDetalles();
+			}
+			
+		});
 		add(btnLimpiar);
 		
 		JButton btnAgregarCliente = new JButton("New button");
 		btnAgregarCliente.setBounds(341, 109, 25, 25);
+		btnAgregarCliente.setBackground(Colors.BONE);
+		btnAgregarCliente.setFocusPainted(false);
 		btnAgregarCliente.addActionListener(new ActionListener() {
 			
 			@Override
@@ -331,25 +405,43 @@ public class PanelVentas extends JPanel {
 		lblHora.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblHora.setBounds(551, 20, 68, 23);
 		add(lblHora);
+		
+		JButton btnFactura = new JButton("Guardar");
+		btnFactura.setBounds(614, 570, 98, 30);
+		btnFactura.setBackground(new Color(136, 231, 136));
+		btnFactura.setFocusPainted(false);
+		btnFactura.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				guardarFactura();
+			}
+			
+		});
+		add(btnFactura);
 		reloj.iniciar();
+		
+		iniciarNuevaFactura();
 		
 		
 	}	
 	
 	public void actualizarComboBox() {
 		try{
-			String sql = "SELECT nombre, apellido, email, telefono FROM clientes";
+			String sql = "SELECT id_cliente, nombre, apellido, email, telefono FROM clientes";
 			PreparedStatement statement = con.prepareStatement(sql);
 			ResultSet rs = statement.executeQuery();
 			
 			listaClientes.clear();
 			
 			while(rs.next()) {
+				int id = rs.getInt("id_cliente");
 				String nombre = rs.getString("nombre");
 				String apellido = rs.getString("apellido");
 				String email = rs.getString("email");
 				String telefono = rs.getString("telefono");
-				listaClientes.add(new Cliente(nombre, apellido, email, telefono));
+				listaClientes.add(new Cliente(id, nombre, apellido, email, telefono));
 			}
 			
 			for(Cliente x : listaClientes) {
@@ -372,13 +464,21 @@ public class PanelVentas extends JPanel {
 		ventanaArticulo.setLocation(getMousePosition());
 		ventanaArticulo.setVisible(true);
 	}
-	
+
 	public void setDatosProducto(String codigo, String nombre, String precio) {
-		tfArticulo.setText(nombre);
-		tfCodigo.setText(codigo);
-		tfPrecio.setText(precio);
+	    this.productoSeleccionado = Producto.listaProductos.stream()
+	            .filter(p -> String.valueOf(p.getCodigo()).equals(codigo))
+	            .findFirst()
+	            .orElse(null);
+	    
+	    if (productoSeleccionado != null) {
+	        tfArticulo.setText(nombre);
+	        tfCodigo.setText(codigo);
+	        tfPrecio.setText(precio);
+	        actualizarDetalle();
+	    }
 	}
-	
+
 	public void actualizarDetalle() {
 		int cantidad = (int) spinnerCantidadProducto.getValue();
 		double precio = Double.parseDouble(tfPrecio.getText());
@@ -399,46 +499,267 @@ public class PanelVentas extends JPanel {
 	
 	public void agregarDetalle() {
 		
-		String producto = tfCodigo.getText();
-		String nombre = tfArticulo.getText();
-		double unidad = Double.parseDouble(tfPrecio.getText());
-		int cantidad = (int) spinnerCantidadProducto.getValue();
-		Double importe = unidad * cantidad;
-		// redondear a dos decimales
-		importe = Math.round(importe * 100.0) / 100.0;
-		Double impuesto = Double.parseDouble(tImpuesto.getText());
-		String neto = String.format("%.2f", importe + impuesto);
-		
-		modelo.addRow(new Object[]{producto, nombre, unidad, cantidad, importe, impuesto, neto});
-		
-		spinnerCantidadProducto.setValue(1);
-		actualizarTotales();
+	    if (productoSeleccionado == null) {
+	        JOptionPane.showMessageDialog(this, "Debe seleccionar un producto primero");
+	        return;
+	    }
+	    
+	    int cantidad = (int) spinnerCantidadProducto.getValue();
+	    
+	    if (cantidad > productoSeleccionado.getStock() + (modoEdicion ? detallesTemporales.get(indiceEdicion).getCantidad() : 0)) {
+	        JOptionPane.showMessageDialog(this, 
+	            "No hay suficiente stock. Stock disponible: " + productoSeleccionado.getStock());
+	        return;
+	    }
+	    
+	    if (modoEdicion) {
+	    	
+	        DetalleFactura detalleEditado = detallesTemporales.get(indiceEdicion);
+	        detalleEditado.setCantidad(cantidad);
+	        detalleEditado.setPrecioUnitario(productoSeleccionado.getPrecio());
+	        
+	        actualizarTabla();
+	        actualizarTotales();
+		    limpiarCamposProducto(); 
+	        
+	        modoEdicion = false;
+	        indiceEdicion = -1;
+	    } else {
+
+	        DetalleFactura detalle = new DetalleFactura(
+	            productoSeleccionado, 
+	            cantidad,
+	            productoSeleccionado.getPrecio()
+	        );
+	        
+	        detallesTemporales.add(detalle);
+	        actualizarTabla();
+	        actualizarTotales();
+	    }
+
+	    limpiarCamposProducto(); 
 	}
 	
-	public void actualizarTotales() {
-		double subTotal = 0.0;
-		double impuesto = 0.0;
+	private void actualizarTabla() {
+	    modelo.setRowCount(0);
+	    
+	    for (DetalleFactura detalle : detallesTemporales) {
+	        
+	    	// Formatear a 2 decimales
+	        double importe = Math.round(detalle.getImporte() * 100.0) / 100.0;
+	        double impuesto = Math.round(detalle.getImpuesto() * 100.0) / 100.0;
+	        double neto = Math.round(detalle.getTotal() * 100.0) / 100.0;
+	    	
+	    	modelo.addRow(new Object[]{
+	            detalle.getProducto().getCodigo(),
+	            detalle.getProducto().getNombre(),
+	            String.format("%.2f", detalle.getPrecioUnitario()),
+	            detalle.getCantidad(),
+	            String.format("%.2f", importe),  
+	            String.format("%.2f", impuesto), 
+	            String.format("%.2f", neto)      
+	            
+	        });
+	    }
+	}
+	
+	private void borrarDetalle() {
+		if (table.getSelectedRow() == -1) {
+			JOptionPane.showMessageDialog(null, "Por favor, seleccione una fila", "Error", JOptionPane.WARNING_MESSAGE);
+		}else {
+			int resp = JOptionPane.showConfirmDialog(null, "Seguro que desea eliminar", "Confirmacion", JOptionPane.YES_NO_OPTION);
+			
+			if(resp == JOptionPane.YES_OPTION) {
+				//modelo.removeRow(tabla.getSelectedRow());
+				detallesTemporales.remove(table.getSelectedRow());
+				actualizarTabla();
+				actualizarTotales();
+				
+			}
+		}
+	}
+	
+	private void editarDetalle() {
+		int fila = table.getSelectedRow();
 		
-	    for (int fila = 0; fila < modelo.getRowCount(); fila++) {
-	        try {
+		if (fila == -1) {
+			
+			JOptionPane.showMessageDialog(null, "Por favor, seleccione una fila", "Error", JOptionPane.WARNING_MESSAGE);
+			
+		}else {
+			
+	        modoEdicion = true;
+	        indiceEdicion = fila;
+	      
+	        DetalleFactura detalle = detallesTemporales.get(fila);
+	        
+	        productoSeleccionado = detalle.getProducto();
+	        tfArticulo.setText(detalle.getProducto().getNombre());
+	        tfCodigo.setText(String.valueOf(detalle.getProducto().getCodigo()));
+	        tfPrecio.setText(String.format("%.2f", detalle.getPrecioUnitario()));
+	        spinnerCantidadProducto.setValue(detalle.getCantidad());
+	        
+	        actualizarDetalle();
+	        
+	        btnAgregar.setText("Actualizar");
+		}
+	}
 
-	            Object valor = modelo.getValueAt(fila, 4);
-	            double precio = Double.parseDouble(valor.toString());
-	            subTotal += precio;
+	public void actualizarTotales() {
+	    double subTotal = detallesTemporales.stream().mapToDouble(DetalleFactura::getImporte).sum();
+	    
+	    double impuestos = detallesTemporales.stream().mapToDouble(DetalleFactura::getImpuesto).sum();
 	            
-	            Object valor2 = modelo.getValueAt(fila, 5);
-	            double importe = Double.parseDouble(valor2.toString());
-	            impuesto += importe;
-	            
-	        } catch (NumberFormatException e) {
-	            System.err.println("Error en fila " + fila + ": " + e.getMessage());
+	    double total = subTotal + impuestos;
+	    
+	    tfSubTotal.setText(String.format("%.2f", subTotal));
+	    tfImpuesto.setText(String.format("%.2f", impuestos));
+	    tfTotalFactura.setText(String.format("%.2f", total));
+	}
+	
+	private void iniciarNuevaFactura() {
+	    this.facturaActual = new Factura();
+	    this.detallesTemporales.clear();
+	    this.tNoFactura.setText(generarNumeroFactura());
+	    this.tfFecha.setText(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+	    limpiarCamposProducto();
+	    modelo.setRowCount(0); 
+	    actualizarTotales();
+	}
+	
+	private void guardarFactura() {
+	    // Validaciones
+	    if (detallesTemporales.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "No hay detalles para facturar");
+	        return;
+	    }
+	    
+	    if (tfcliente.getText().isEmpty()) {
+	    	tfcliente.setText( String.valueOf(listaClientes.getFirst()));
+	        return;
+	    }
+	    
+	    facturaActual.setTotal(Double.parseDouble(tfTotalFactura.getText()));
+	    
+	    try {
+	        con.setAutoCommit(false);
+	        
+	        String sqlFactura = "INSERT INTO facturas (id_cliente, fecha, total) VALUES (?, ?, ?)";
+	        PreparedStatement stmtFactura = con.prepareStatement(sqlFactura, PreparedStatement.RETURN_GENERATED_KEYS);
+	        
+	        Cliente cliente = (Cliente) cbCliente.getSelectedItem();
+	        stmtFactura.setInt(1, cliente.getId());
+	        stmtFactura.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+	        stmtFactura.setDouble(3, facturaActual.getTotal());
+	        
+	        int affectedRows = stmtFactura.executeUpdate();
+	        
+	        if (affectedRows == 0) {
+	            throw new SQLException("No se pudo guardar la factura");
+	        }
+	        
+	        // Obtener ID generado
+	        int idFactura;
+	        try (ResultSet generatedKeys = stmtFactura.getGeneratedKeys()) {
+	            if (generatedKeys.next()) {
+	                idFactura = generatedKeys.getInt(1);
+	            } else {
+	                throw new SQLException("No se obtuvo el ID de la factura");
+	            }
+	        }
+	        
+	        // 3. Guardar detalles
+	        String sqlDetalle = "INSERT INTO detalle_factura (id_factura, id_producto, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?)";
+	        PreparedStatement stmtDetalle = con.prepareStatement(sqlDetalle);
+	        
+	        for (DetalleFactura detalle : detallesTemporales) {
+	            stmtDetalle.setInt(1, idFactura);
+	            stmtDetalle.setInt(2, detalle.getProducto().getId());
+	            stmtDetalle.setInt(3, detalle.getCantidad());
+	            stmtDetalle.setDouble(4, detalle.getPrecioUnitario());
+	            stmtDetalle.setDouble(5, detalle.getImporte());
+	            stmtDetalle.addBatch();
+	        }
+	        
+	        stmtDetalle.executeBatch();
+	        
+	        // 4. Confirmar transacción
+	        con.commit();
+	        
+	        // 5. Actualizar objeto factura
+	        facturaActual.setIdFactura(idFactura);
+	        facturaActual.setNumeroFactura(String.format("FAC-%05d", idFactura));
+	        
+	        // 6. Agregar a lista
+	        Factura.listaFacturas.add(facturaActual);
+	        
+	        JOptionPane.showMessageDialog(this, "Factura guardada exitosamente. N°: " + facturaActual.getNumeroFactura());
+	        
+	        // 7. Iniciar nueva factura
+	        iniciarNuevaFactura();
+	        
+	    } catch (SQLException e) {
+	        try {
+	            con.rollback();
+	            JOptionPane.showMessageDialog(this, "Error al guardar factura: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        } catch (SQLException ex) {
+	            JOptionPane.showMessageDialog(this, "Error grave al hacer rollback: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    } finally {
+	        try {
+	            con.setAutoCommit(true);
+	        } catch (SQLException e) {
+	            e.printStackTrace();
 	        }
 	    }
-	       
-	    tfSubTotal.setText(String.format("%.2f",subTotal));
-	    tfImpuesto.setText(String.format("%.2f",impuesto));
-	    
-	    tfTotalFactura.setText(String.format("%.2f",subTotal+impuesto));
+	}
 	
+	private String generarNumeroFactura() {
+	    try {
+	        // Consulta para obtener el próximo ID de factura
+	        String sql = "SELECT MAX(id_factura) + 1 AS next_id FROM facturas";
+	        PreparedStatement stmt = con.prepareStatement(sql);
+	        ResultSet rs = stmt.executeQuery();
+	        
+	        if (rs.next()) {
+	            int nextId = rs.getInt("next_id");
+	            // Si es la primera factura, nextId será 0 + 1 = 1
+	            if (nextId == 0) nextId = 1; // Para manejar cuando no hay facturas
+	            
+	            // Formatear el número de factura (ej: FAC-00001)
+	            return String.format("FAC-%05d", nextId);
+	        }
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(this, 
+	            "Error al generar número de factura: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    
+	    // Fallback: Usar timestamp si hay error
+	    return "FAC-" + System.currentTimeMillis();
+	}
+	
+	private void limpiarCamposProducto() {
+	    spinnerCantidadProducto.setValue(1);
+	    
+	    tfArticulo.setText("");  
+	    tfCodigo.setText("");    
+	    tfPrecio.setText("");    
+	    tImpuesto.setText("");   
+	    tfTotalDetalle.setText(""); 
+	    productoSeleccionado = null;
+	    
+	    if (modoEdicion) {
+	        modoEdicion = false;
+	        indiceEdicion = -1;
+	        btnAgregar.setText("Agregar");
+	    }
+	    
+	}
+	
+	private void limpiarDetalles() {
+		detallesTemporales.clear();
+		actualizarTabla();
+		actualizarTotales();	
 	}
 }
