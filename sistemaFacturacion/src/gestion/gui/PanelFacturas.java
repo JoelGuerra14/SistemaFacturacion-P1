@@ -259,5 +259,4 @@ public class PanelFacturas extends GradientPanel{
         cargarFacturasDesdeBD();
         mostrarEnTabla();
 	}
-	
 }

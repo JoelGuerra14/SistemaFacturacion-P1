@@ -34,11 +34,12 @@ import javax.swing.table.DefaultTableModel;
 import gestion.clases.Producto;
 import gestion.clases.Proveedor;
 import gestion.database.DatabaseConnection;
+import gestion.interfaces.IGestionable;
 import gestion.util.ButtonRenderer;
 import gestion.util.Colors;
 import gestion.util.GradientPanel;
 
-public class PanelProductos extends GradientPanel {
+public class PanelProductos extends GradientPanel implements IGestionable{
     /**
 	 * 
 	 */
@@ -134,7 +135,7 @@ public class PanelProductos extends GradientPanel {
         registrar.setBackground(Colors.PASTEL_GREEN);
         registrar.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
-        		agregarProducto();
+        		agregar();
         		actualizarTablaDesdeArrayList();
         	}
         });
@@ -189,14 +190,13 @@ public class PanelProductos extends GradientPanel {
                                 "Confirmar eliminación", 
                                 JOptionPane.YES_NO_OPTION);
                     if (confirmacion == JOptionPane.YES_OPTION) {
-                        eliminarProducto(idProducto);
+                        eliminar(idProducto);
                     }
                 }
             }
         });
-		
 		cargarProveedoresDesdeBD();
-        cargarProductosDesdeBD();
+        cargarDataDb();
         
 		scrollPane.setViewportView(table);
         
@@ -257,7 +257,7 @@ public class PanelProductos extends GradientPanel {
                cbProveedor.getSelectedItem() == null;
     }
     
-    private void agregarProducto() {
+    /*private void agregarProducto() {
         if (camposNulos()) {
             JOptionPane.showMessageDialog(null, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
             return;
@@ -327,7 +327,7 @@ public class PanelProductos extends GradientPanel {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
+    }*/
     
     public static void actualizarTablaDesdeArrayList() {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -362,7 +362,7 @@ public class PanelProductos extends GradientPanel {
         }
     }
     
-    private void cargarProductosDesdeBD() {
+    /*private void cargarProductosDesdeBD() {
     	Producto.listaProductos.clear();
         
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.stock, pr.nombre AS proveedor, p.fk_id_proveedores, p.codigo " +
@@ -390,9 +390,9 @@ public class PanelProductos extends GradientPanel {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error cargando productos: " + e.getMessage());
         }
-    }
+    }*/
     
-    private void eliminarProducto(int idProducto) {
+    /*private void eliminarProducto(int idProducto) {
         String sql = "DELETE FROM productos WHERE id_producto = ?";
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idProducto);
@@ -409,5 +409,145 @@ public class PanelProductos extends GradientPanel {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al eliminar el producto: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
+    }*/
+
+	@Override
+	public void agregar() {
+		// TODO Auto-generated method stub
+		if (camposNulos()) {
+            JOptionPane.showMessageDialog(null, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int codigoProducto = 0;
+        try {
+            codigoProducto = Integer.parseInt(tIdProducto.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "El codigo ingresado no es válido. Debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        
+        String nombreP = tNombre.getText();
+
+        // Validación del precio
+        double precioP = 0;
+        try {
+            precioP = Double.parseDouble(tPrecio.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "El precio ingresado no es válido. Debe ser un número.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int stock = 0;
+        try {
+            stock = Integer.parseInt(tStock.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "El stock debe ser un número válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Proveedor proveedorSeleccionado = (Proveedor) cbProveedor.getSelectedItem();
+        if (proveedorSeleccionado == null) {
+            JOptionPane.showMessageDialog(null, "Debes seleccionar un proveedor.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int idProveedor = proveedorSeleccionado.getId();
+        String sql = "INSERT INTO productos (codigo, nombre, precio, stock, fk_id_proveedores) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, codigoProducto);
+            ps.setString(2, nombreP);
+            ps.setDouble(3, precioP);
+            ps.setInt(4, stock);
+            ps.setInt(5, idProveedor);
+
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                // Obtener el ID generado por la BD
+                ResultSet rs = ps.getGeneratedKeys();
+                int idGenerado = 0;
+                if (rs.next()) {
+                    idGenerado = rs.getInt(1);
+                }
+                Producto nuevo = new Producto(idGenerado, nombreP, precioP, stock, codigoProducto,proveedorSeleccionado);
+                
+                Producto.listaProductos.add(nuevo);
+                actualizarTablaDesdeArrayList();
+                JOptionPane.showMessageDialog(null, "Producto insertado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se insertó el producto.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+	}
+
+	@Override
+	public void editar() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void eliminar() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void eliminar(int id) {
+		// TODO Auto-generated method stub
+		String sql = "DELETE FROM productos WHERE id_producto = ?";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+
+            int filasAfectadas = ps.executeUpdate();
+
+            if (filasAfectadas > 0) {
+            	Producto.listaProductos.removeIf(producto -> producto.getId() == id);
+            	actualizarTablaDesdeArrayList();
+                JOptionPane.showMessageDialog(null, "Producto eliminado correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo eliminar el producto.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error al eliminar el producto: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+	}
+
+	@Override
+	public void cargarDataDb() {
+		// TODO Auto-generated method stub
+		Producto.listaProductos.clear();
+        
+        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.stock, pr.nombre AS proveedor, p.fk_id_proveedores, p.codigo " +
+                "FROM productos p LEFT JOIN proveedores pr ON p.fk_id_proveedores = pr.id_proveedor";
+        
+        try (PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                int idProducto = rs.getInt("id_producto");
+                String nombre = rs.getString("nombre");
+                double precio = rs.getDouble("precio");
+                int stock = rs.getInt("stock");
+                String nombreProveedor = rs.getString("proveedor");
+                int idProveedor = rs.getInt("fk_id_proveedores");
+                int codigoProducto = rs.getInt("codigo");  //carga el código del producto
+
+                Proveedor proveedor = new Proveedor(idProveedor, nombreProveedor);
+
+                Producto producto = new Producto(idProducto, nombre, precio, stock, codigoProducto, proveedor);
+                Producto.listaProductos.add(producto);
+            }
+            actualizarTablaDesdeArrayList();
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error cargando productos: " + e.getMessage());
+        }
+	}
+
 }

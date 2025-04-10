@@ -32,6 +32,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import gestion.database.DatabaseConnection;
+import gestion.interfaces.IGestionable;
 import gestion.util.ButtonRenderer;
 import gestion.util.Colors;
 import gestion.util.GradientPanel;
@@ -39,7 +40,7 @@ import gestion.clases.Cliente;
 import gestion.clases.Empleado;
 
 
-public class PanelClientes extends GradientPanel{
+public class PanelClientes extends GradientPanel implements IGestionable{
 
 	/**
 	 * 
@@ -129,7 +130,7 @@ public class PanelClientes extends GradientPanel{
                 return false;
             }
         };
-        cargarClientesDesdeDB();
+        cargarDataDb();
         mostrarClientesEnTabla();
 		//cargarUsuarios(); ///
 		table_1.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer("Editar", new Color(100, 200, 255)));
@@ -150,7 +151,7 @@ public class PanelClientes extends GradientPanel{
                     
                     VentanaEditar(idCliente, nombre, apellido, correo, telefono);
                     //cargarUsuarios();
-                    mostrarClientesEnTabla(); 
+                    mostrarClientesEnTabla();
                 }else if(columna == 6) {
                 	int idCliente = (int) table_1.getValueAt(fila, 0);
                 	int confirmacion = JOptionPane.showConfirmDialog(null, 
@@ -158,7 +159,7 @@ public class PanelClientes extends GradientPanel{
                             "Confirmar eliminación", 
                             JOptionPane.YES_NO_OPTION);
                 	if (confirmacion == JOptionPane.YES_OPTION) {
-                        eliminarCliente(idCliente);
+                        eliminar(idCliente);
                         mostrarClientesEnTabla();
                     }
                 }
@@ -180,7 +181,7 @@ public class PanelClientes extends GradientPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				agregarCliente();
+				agregar();
 			}
 			
 		});
@@ -202,7 +203,7 @@ public class PanelClientes extends GradientPanel{
 		return false;
 	}
 	
-	public void agregarCliente() {
+	/*public void agregarCliente() {
 	    String nombre = nombreCliente.getText();
 	    String apellido = apellidoCliente.getText();
 	    String correo = correoCliente.getText();
@@ -236,9 +237,9 @@ public class PanelClientes extends GradientPanel{
 	    } else {
 	        JOptionPane.showMessageDialog(ventanaP, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
 	    }
-	}
+	}*/
 	
-	private void cargarClientesDesdeDB() {
+	/*private void cargarClientesDesdeDB() {
 	    listaClientes.clear();
 
 	    try {
@@ -259,7 +260,7 @@ public class PanelClientes extends GradientPanel{
 	    } catch (SQLException e) {
 	        JOptionPane.showMessageDialog(null, "Error al cargar clientes: " + e.getMessage());
 	    }
-	}
+	}*/
 	
 	public static void mostrarClientesEnTabla() {
 	    modeloCliente.setRowCount(0);
@@ -274,7 +275,7 @@ public class PanelClientes extends GradientPanel{
 	}
 	
 	
-	private void eliminarCliente(int idCliente) {
+	/*private void eliminarCliente(int idCliente) {
 		String sql = "DELETE FROM clientes WHERE id_cliente = ?";
 		
 		try(PreparedStatement ps = con.prepareStatement(sql)){
@@ -301,7 +302,7 @@ public class PanelClientes extends GradientPanel{
 			JOptionPane.showMessageDialog(null, "Error al eliminar cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 		}
 		
-	}
+	}*/
 	
 	public void clear() {
 		nombreCliente.setText("");
@@ -309,4 +310,110 @@ public class PanelClientes extends GradientPanel{
 		correoCliente.setText("");
 		telCliente.setText("");
 	}
+
+	@Override
+	public void agregar() {
+		// TODO Auto-generated method stub
+		String nombre = nombreCliente.getText();
+	    String apellido = apellidoCliente.getText();
+	    String correo = correoCliente.getText();
+
+	    String telefono = telCliente.getText();
+
+	    if (!faltanDatos(nombre, apellido, correo, telefono)) {
+	        String sql = "INSERT INTO clientes (nombre, apellido, email, telefono) VALUES (?, ?, ?, ?)";
+
+	        try (PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+	            ps.setString(1, nombre);
+	            ps.setString(2, apellido);
+	            ps.setString(3, correo);
+	            ps.setString(4, telefono);
+
+	           int filas = ps.executeUpdate();
+	           if (filas > 0) {
+	                ResultSet generatedKeys = ps.getGeneratedKeys();
+	                if (generatedKeys.next()) {
+	                    int id = generatedKeys.getInt(1);
+
+	                    listaClientes.add(new Cliente(id, nombre, apellido, correo, telefono));
+	                    mostrarClientesEnTabla();
+	                    PanelVentas.actualizarComboBox();
+	                    clear();
+	                }
+	           }
+	        } catch (SQLException e) {
+	            JOptionPane.showMessageDialog(ventanaP, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+	    } else {
+	        JOptionPane.showMessageDialog(ventanaP, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
+	    }
+	}
+
+	@Override
+	public void editar() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void eliminar() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void eliminar(int id) {
+		// TODO Auto-generated method stub
+		String sql = "DELETE FROM clientes WHERE id_cliente = ?";
+		
+		try(PreparedStatement ps = con.prepareStatement(sql)){
+			ps.setInt(1, id);
+			int filasAfectadas = ps.executeUpdate();
+			
+			if (filasAfectadas > 0) {
+	            JOptionPane.showMessageDialog(null, "Cliente eliminado");
+	        } else {
+	            JOptionPane.showMessageDialog(null, "No se pudo eliminar el cliente.");
+	        }
+			
+			for(Cliente x : listaClientes) {
+				if (x.getId() == id) {
+					listaClientes.remove(x);
+					break;
+				}
+			}
+			
+            PanelVentas.actualizarComboBox();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			JOptionPane.showMessageDialog(null, "Error al eliminar cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	@Override
+	public void cargarDataDb() {
+		// TODO Auto-generated method stub
+		listaClientes.clear();
+
+	    try {
+	        String query = "SELECT id_cliente, nombre, apellido, email, telefono FROM clientes";
+	        PreparedStatement statement = con.prepareStatement(query);
+	        ResultSet resultSet = statement.executeQuery();
+
+	        while (resultSet.next()) {
+	            int id = resultSet.getInt("id_cliente");
+	            String nombre = resultSet.getString("nombre");
+	            String apellido = resultSet.getString("apellido");
+	            String correo = resultSet.getString("email");
+	            String telefono = resultSet.getString("telefono");
+
+	            listaClientes.add(new Cliente(id, nombre, apellido, correo, telefono));
+	        }
+
+	    } catch (SQLException e) {
+	        JOptionPane.showMessageDialog(null, "Error al cargar clientes: " + e.getMessage());
+	    }
+	}
+
 }
