@@ -205,63 +205,7 @@ public class PanelProveedores extends GradientPanel implements IGestionable{
 		return false;
 	}
 	
-	/*public void agregarProveedor() {
-		String nombre = tfNombre.getText();
-		String telefono = tfContacto.getText();
-		String direccion = tfDireccion.getText();
-		
-		
-		if(!faltanDatos(nombre, telefono, direccion)) {
-			
-			String sql = "INSERT INTO proveedores (nombre, telefono, direccion) VALUES (?, ?, ?)";
-			
-	        try (PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-	            ps.setString(1, nombre);
-	            ps.setString(2, telefono);
-	            ps.setString(3, direccion);
-
-	           int filas = ps.executeUpdate();
-	           if (filas > 0) {
-	                ResultSet generatedKeys = ps.getGeneratedKeys();
-	                if (generatedKeys.next()) {
-	                    int id = generatedKeys.getInt(1);
-
-	                    listaProveedores.add(new Proveedor(id, nombre, telefono, direccion));
-	                    mostrarProveedoresEnTabla(); 
-	                    PanelProductos.cargarProveedoresDesdeBD();
-	                    clear();
-	                }
-	           }
-	        } catch (SQLException e) {
-	            JOptionPane.showMessageDialog(ventanaP, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	        }
-		} else {
-	        JOptionPane.showMessageDialog(ventanaP, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
-	    }
-		
-	}*/
 	
-	/*private void cargarProveedoresDesdeDB() {
-	    listaProveedores.clear();
-
-	    try {
-	        String query = "SELECT id_proveedor, nombre, telefono, direccion FROM proveedores";
-	        PreparedStatement statement = con.prepareStatement(query);
-	        ResultSet resultSet = statement.executeQuery();
-
-	        while (resultSet.next()) {
-	            int id = resultSet.getInt("id_proveedor");
-	            String nombre = resultSet.getString("nombre");
-	            String telefono = resultSet.getString("telefono");
-	            String direccion = resultSet.getString("direccion");
-
-	            listaProveedores.add(new Proveedor(id, nombre, telefono, direccion));
-	        }
-
-	    } catch (SQLException e) {
-	        JOptionPane.showMessageDialog(null, "Error al cargar proveedores: " + e.getMessage());
-	    }
-	}*/
 	
 	public static void mostrarProveedoresEnTabla() {
 	    modelo.setRowCount(0);
@@ -272,25 +216,6 @@ public class PanelProveedores extends GradientPanel implements IGestionable{
 	        });
 	    }
 	}
-	
-	/*private void eliminarProveedor(int idProveedor) {
-			
-	    String sql = "DELETE FROM proveedores WHERE id_proveedor = ?";
-	    try (PreparedStatement ps = con.prepareStatement(sql)) {
-	        ps.setInt(1, idProveedor);
-	        int filasAfectadas = ps.executeUpdate();
-
-	        if (filasAfectadas > 0) {
-	            JOptionPane.showMessageDialog(null, "Proveedor eliminado exitosamente.");
-	            listaProveedores.removeIf(p -> p.getId() == idProveedor);
-                PanelProductos.cargarProveedoresDesdeBD();
-	        } else {
-	            JOptionPane.showMessageDialog(null, "No se pudo eliminar el proveedor.");
-	        }
-	    } catch (SQLException e) {
-	        JOptionPane.showMessageDialog(null, "Error al eliminar proveedor: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	    }
-	}*/
 	
 	public void clear() {
 		tfNombre.setText("");

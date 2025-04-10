@@ -1,7 +1,16 @@
 package gestion.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JFrame; 
 import javax.swing.JTabbedPane;
+
+import com.itextpdf.awt.geom.Point;
+
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class AdminDashboard extends JFrame {
 
@@ -27,7 +36,32 @@ public class AdminDashboard extends JFrame {
         tabbedPane.addTab("Usuarios", new PanelUsuarios());
         tabbedPane.addTab("Facturas", new PanelFacturas());
         
+        
+        
         getContentPane().add(tabbedPane);
+        
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+        
+        JMenu mnNewMenu = new JMenu("Opciones");
+        menuBar.add(mnNewMenu);
+        
+        JMenuItem mntmNewMenuItem = new JMenuItem("Cerrar sesión");
+        mntmNewMenuItem.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				java.awt.Point location = getLocation();
+				dispose();
+				Login loginf = new Login();
+				loginf.getFrame().setLocation(location);
+				loginf.getFrame().setVisible(true);
+			}
+        	
+        });
+        mnNewMenu.add(mntmNewMenuItem);
+
         setVisible(true);
 	}
 }

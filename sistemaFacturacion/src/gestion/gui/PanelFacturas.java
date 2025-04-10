@@ -152,12 +152,11 @@ public class PanelFacturas extends GradientPanel{
 	    if (factura != null) {
 	        JFileChooser fileChooser = new JFileChooser();
 	        
-	        // Configurar el file chooser
+	        // file chooser
 	        fileChooser.setDialogTitle("Guardar factura como PDF");
 	        fileChooser.setSelectedFile(new File("Factura_" + factura.getIdFactura() + ".pdf"));
 	        fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos PDF (*.pdf)", "pdf"));
 	        
-	        // Mostrar diálogo de guardado
 	        int userSelection = fileChooser.showSaveDialog(this);
 	        
 	        if (userSelection == JFileChooser.APPROVE_OPTION) {

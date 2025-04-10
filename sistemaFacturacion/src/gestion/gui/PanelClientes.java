@@ -203,65 +203,6 @@ public class PanelClientes extends GradientPanel implements IGestionable{
 		return false;
 	}
 	
-	/*public void agregarCliente() {
-	    String nombre = nombreCliente.getText();
-	    String apellido = apellidoCliente.getText();
-	    String correo = correoCliente.getText();
-
-	    String telefono = telCliente.getText();
-
-	    if (!faltanDatos(nombre, apellido, correo, telefono)) {
-	        String sql = "INSERT INTO clientes (nombre, apellido, email, telefono) VALUES (?, ?, ?, ?)";
-
-	        try (PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-	            ps.setString(1, nombre);
-	            ps.setString(2, apellido);
-	            ps.setString(3, correo);
-	            ps.setString(4, telefono);
-
-	           int filas = ps.executeUpdate();
-	           if (filas > 0) {
-	                ResultSet generatedKeys = ps.getGeneratedKeys();
-	                if (generatedKeys.next()) {
-	                    int id = generatedKeys.getInt(1);
-
-	                    listaClientes.add(new Cliente(id, nombre, apellido, correo, telefono));
-	                    mostrarClientesEnTabla(); 
-	                    PanelVentas.actualizarComboBox();
-	                    clear();
-	                }
-	           }
-	        } catch (SQLException e) {
-	            JOptionPane.showMessageDialog(ventanaP, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-	        }
-	    } else {
-	        JOptionPane.showMessageDialog(ventanaP, "Por favor, completa todos los campos", "Error", JOptionPane.WARNING_MESSAGE);
-	    }
-	}*/
-	
-	/*private void cargarClientesDesdeDB() {
-	    listaClientes.clear();
-
-	    try {
-	        String query = "SELECT id_cliente, nombre, apellido, email, telefono FROM clientes";
-	        PreparedStatement statement = con.prepareStatement(query);
-	        ResultSet resultSet = statement.executeQuery();
-
-	        while (resultSet.next()) {
-	            int id = resultSet.getInt("id_cliente");
-	            String nombre = resultSet.getString("nombre");
-	            String apellido = resultSet.getString("apellido");
-	            String correo = resultSet.getString("email");
-	            String telefono = resultSet.getString("telefono");
-
-	            listaClientes.add(new Cliente(id, nombre, apellido, correo, telefono));
-	        }
-
-	    } catch (SQLException e) {
-	        JOptionPane.showMessageDialog(null, "Error al cargar clientes: " + e.getMessage());
-	    }
-	}*/
-	
 	public static void mostrarClientesEnTabla() {
 	    modeloCliente.setRowCount(0);
 
@@ -273,36 +214,6 @@ public class PanelClientes extends GradientPanel implements IGestionable{
 	        });
 	    }
 	}
-	
-	
-	/*private void eliminarCliente(int idCliente) {
-		String sql = "DELETE FROM clientes WHERE id_cliente = ?";
-		
-		try(PreparedStatement ps = con.prepareStatement(sql)){
-			ps.setInt(1, idCliente);
-			int filasAfectadas = ps.executeUpdate();
-			
-			if (filasAfectadas > 0) {
-	            JOptionPane.showMessageDialog(null, "Cliente eliminado");
-	        } else {
-	            JOptionPane.showMessageDialog(null, "No se pudo eliminar el cliente.");
-	        }
-			
-			for(Cliente x : listaClientes) {
-				if (x.getId() == idCliente) {
-					listaClientes.remove(x);
-					break;
-				}
-			}
-			
-            PanelVentas.actualizarComboBox();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			JOptionPane.showMessageDialog(null, "Error al eliminar cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-		}
-		
-	}*/
 	
 	public void clear() {
 		nombreCliente.setText("");

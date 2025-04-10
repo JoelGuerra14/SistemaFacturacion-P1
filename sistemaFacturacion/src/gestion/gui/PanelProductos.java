@@ -362,55 +362,6 @@ public class PanelProductos extends GradientPanel implements IGestionable{
         }
     }
     
-    /*private void cargarProductosDesdeBD() {
-    	Producto.listaProductos.clear();
-        
-        String sql = "SELECT p.id_producto, p.nombre, p.precio, p.stock, pr.nombre AS proveedor, p.fk_id_proveedores, p.codigo " +
-                "FROM productos p LEFT JOIN proveedores pr ON p.fk_id_proveedores = pr.id_proveedor";
-        
-        try (PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                int idProducto = rs.getInt("id_producto");
-                String nombre = rs.getString("nombre");
-                double precio = rs.getDouble("precio");
-                int stock = rs.getInt("stock");
-                String nombreProveedor = rs.getString("proveedor");
-                int idProveedor = rs.getInt("fk_id_proveedores");
-                int codigoProducto = rs.getInt("codigo");  //carga el código del producto
-
-                Proveedor proveedor = new Proveedor(idProveedor, nombreProveedor);
-
-                Producto producto = new Producto(idProducto, nombre, precio, stock, codigoProducto, proveedor);
-                Producto.listaProductos.add(producto);
-            }
-            actualizarTablaDesdeArrayList();
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error cargando productos: " + e.getMessage());
-        }
-    }*/
-    
-    /*private void eliminarProducto(int idProducto) {
-        String sql = "DELETE FROM productos WHERE id_producto = ?";
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idProducto);
-
-            int filasAfectadas = ps.executeUpdate();
-
-            if (filasAfectadas > 0) {
-            	Producto.listaProductos.removeIf(producto -> producto.getId() == idProducto);
-                actualizarTablaDesdeArrayList();
-                JOptionPane.showMessageDialog(null, "Producto eliminado correctamente.");
-            } else {
-                JOptionPane.showMessageDialog(null, "No se pudo eliminar el producto.");
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al eliminar el producto: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }*/
-
 	@Override
 	public void agregar() {
 		// TODO Auto-generated method stub
