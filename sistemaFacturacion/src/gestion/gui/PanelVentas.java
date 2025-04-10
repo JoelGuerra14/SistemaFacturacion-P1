@@ -1,6 +1,6 @@
 package gestion.gui;
 
-import java.awt.Dimension;
+import java.awt.Dimension; 
 
 import javax.swing.JPanel;
 import javax.swing.AbstractButton;
@@ -9,9 +9,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -23,7 +20,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.awt.Color;
 import java.awt.Component;
 

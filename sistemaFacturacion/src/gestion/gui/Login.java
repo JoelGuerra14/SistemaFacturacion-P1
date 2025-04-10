@@ -1,7 +1,5 @@
 package gestion.gui;
 
-import java.awt.EventQueue; 
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -125,7 +123,7 @@ public class Login {
 						ventanaAdmin.setVisible(true);
 					
 					} else if (rol.equals("empleado")) {
-						EmpleadoGUI ventanaEmpleado = new EmpleadoGUI();
+						EmpleadoDashboard ventanaEmpleado = new EmpleadoDashboard();
 						ventanaEmpleado.getFrame().setLocation(location);
 						ventanaEmpleado.getFrame().setVisible(true);
 					}
@@ -133,7 +131,6 @@ public class Login {
 				}else {
 					JOptionPane.showMessageDialog(frame, "CONTRASEÑA INCORRECTA", "Error", JOptionPane.ERROR_MESSAGE);
 				}
-				
 			}else {
 				JOptionPane.showMessageDialog(frame, "EL USUARIO NO EXISTE: ", "Error", JOptionPane.ERROR_MESSAGE);
 			}

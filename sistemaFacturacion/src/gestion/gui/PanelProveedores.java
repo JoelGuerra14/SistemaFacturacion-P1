@@ -1,6 +1,6 @@
 package gestion.gui;
 
-import java.awt.Color;
+import java.awt.Color; 
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Window;
@@ -26,7 +26,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import gestion.clases.Empleado;
 import gestion.clases.Proveedor;
 import gestion.database.DatabaseConnection;
 import gestion.util.ButtonRenderer;

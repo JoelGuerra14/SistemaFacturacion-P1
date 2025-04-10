@@ -24,6 +24,7 @@ public class AdminDashboard extends JFrame {
         tabbedPane.addTab("Productos", new PanelProductos()); 
         tabbedPane.addTab("Proveedores", new PanelProveedores());
         tabbedPane.addTab("Usuarios", new PanelUsuarios());
+        tabbedPane.addTab("Facturas", new PanelFacturas());
         
         getContentPane().add(tabbedPane);
         setVisible(true);
