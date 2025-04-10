@@ -197,7 +197,7 @@ public class VentanaEditarProducto extends GradientFrame {
                     dispose(); // Cerrar ventana de edición
 
                     // Actualizamos el producto en la lista
-                    for (Producto p : PanelProductos.productos) {
+                    for (Producto p : Producto.listaProductos) {
                         if (p.getId() == Integer.parseInt(idProducto)) {
                             p.setCodigo(nuevoCodigo);
                             p.setNombre(nombre);

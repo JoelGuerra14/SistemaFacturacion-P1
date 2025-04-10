@@ -127,6 +127,7 @@ public class VentanaEditarProveedor extends GradientFrame{
                     if (filasActualizadas > 0) {
                     
                         JOptionPane.showMessageDialog(null, "Proveedor actualizado.");
+	                    PanelProductos.cargarProveedoresDesdeBD();
                         dispose(); // Cerrar ventana de edición
                         
                         for(Proveedor x : PanelProveedores.listaProveedores) {

@@ -228,6 +228,7 @@ public class PanelProveedores extends GradientPanel{
 
 	                    listaProveedores.add(new Proveedor(id, nombre, telefono, direccion));
 	                    mostrarProveedoresEnTabla(); 
+	                    PanelProductos.cargarProveedoresDesdeBD();
 	                    clear();
 	                }
 	           }
@@ -282,6 +283,7 @@ public class PanelProveedores extends GradientPanel{
 	        if (filasAfectadas > 0) {
 	            JOptionPane.showMessageDialog(null, "Proveedor eliminado exitosamente.");
 	            listaProveedores.removeIf(p -> p.getId() == idProveedor);
+                PanelProductos.cargarProveedoresDesdeBD();
 	        } else {
 	            JOptionPane.showMessageDialog(null, "No se pudo eliminar el proveedor.");
 	        }

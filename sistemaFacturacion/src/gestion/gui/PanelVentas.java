@@ -57,8 +57,8 @@ public class PanelVentas extends GradientPanel {
 	private JTextField tImpuesto;
 	private JTextField tfTotalDetalle;
 	JSpinner spinnerCantidadProducto;
-	JComboBox <Cliente> cbCliente;
-	ArrayList <Cliente> listaClientes = new ArrayList<>();
+	static JComboBox <Cliente> cbCliente;
+	static ArrayList <Cliente> listaClientes = new ArrayList<>();
 	private JTable table;
 	private DefaultTableModel modelo;
 	private JTextField tfArticulo;
@@ -67,7 +67,7 @@ public class PanelVentas extends GradientPanel {
 	private JTextField tfTotalFactura;
 	private JTextField tfCodigo;
 	private JButton btnAgregar;
-	Connection con = DatabaseConnection.getInstance().getConnection();
+	static Connection con = DatabaseConnection.getInstance().getConnection();
 	
 	private Factura facturaActual;
 	private ArrayList<DetalleFactura> detallesTemporales = new ArrayList<>();
@@ -423,8 +423,9 @@ public class PanelVentas extends GradientPanel {
 		
 	}	
 	
-	public void actualizarComboBox() {
+	public static void actualizarComboBox() {
 		try{
+			cbCliente.removeAllItems();
 			String sql = "SELECT id_cliente, nombre, apellido, email, telefono FROM clientes";
 			PreparedStatement statement = con.prepareStatement(sql);
 			ResultSet rs = statement.executeQuery();
@@ -692,6 +693,7 @@ public class PanelVentas extends GradientPanel {
 	        JOptionPane.showMessageDialog(this, "Factura guardada exitosamente. N°: " + facturaActual.getNumeroFactura());
 	        
 	        // 7. Iniciar nueva factura
+	        PanelFacturas.recargarFactura();
 	        iniciarNuevaFactura();
 	        
 	    } catch (SQLException e) {

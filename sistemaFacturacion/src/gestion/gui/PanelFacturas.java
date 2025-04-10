@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -41,8 +42,8 @@ public class PanelFacturas extends GradientPanel{
 	private static final long serialVersionUID = 1L;
 	private JTable table;
 	private JButton btnImprimirFac;
-	private DefaultTableModel modelo;
-	Connection con = DatabaseConnection.getInstance().getConnection();
+	private static DefaultTableModel modelo;
+	static Connection con = DatabaseConnection.getInstance().getConnection();
 	
 	public PanelFacturas() {
 		super(Colors.GRADIENT_START, Colors.GRADIENT_END);
@@ -58,6 +59,7 @@ public class PanelFacturas extends GradientPanel{
         JLabel lblNewLbl = new JLabel("Reporte y Facturas");
         lblNewLbl.setFont(new Font("Tahoma", Font.BOLD, 16));
         lblNewLbl.setBounds(10, 11, 318, 44);
+        lblNewLbl.setBorder(BorderFactory.createRaisedBevelBorder());
         panelTitulo.add(lblNewLbl);
         
         JScrollPane scrollPane = new JScrollPane();
@@ -81,22 +83,11 @@ public class PanelFacturas extends GradientPanel{
         btnImprimirFac.setBounds(657, 90, 108, 34);
         add(btnImprimirFac);
         
-        JButton btnRefrescar = new JButton("Refrescar");
-        btnRefrescar.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		recargarTablaFacturas();
-        	}
-        });
-        btnRefrescar.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        btnRefrescar.setBackground(new Color(234, 243, 199));
-        btnRefrescar.setBounds(539, 89, 108, 34);
-        add(btnRefrescar);
-        
         cargarFacturasDesdeBD();
         mostrarEnTabla();
 	}
 	
-	private void cargarFacturasDesdeBD() {
+	private static void cargarFacturasDesdeBD() {
 	    Factura.listaFacturas.clear();
 	    try {
 	        String sql = "SELECT f.id_factura, f.fecha, f.total, " +
@@ -131,7 +122,7 @@ public class PanelFacturas extends GradientPanel{
 	    }
 	}
 	
-	private void mostrarEnTabla() {
+	private static void mostrarEnTabla() {
 	    modelo.setRowCount(0);
 	    for (Factura f : Factura.listaFacturas) {
 	        modelo.addRow(new Object[]{
@@ -141,11 +132,6 @@ public class PanelFacturas extends GradientPanel{
 	            f.getTotal()
 	        });
 	    }
-	}
-
-	private void recargarTablaFacturas() {
-	    cargarFacturasDesdeBD();
-	    mostrarEnTabla();
 	}
 	
 	private Factura obtenerFacturaSeleccionada() {
@@ -214,8 +200,9 @@ public class PanelFacturas extends GradientPanel{
 	                tablaDetalles.addCell("Cantidad");
 	                tablaDetalles.addCell("Precio Unit.");
 	                tablaDetalles.addCell("Impuesto");
-	                tablaDetalles.addCell("Subtotal");
-
+	                tablaDetalles.addCell("Importe");
+	                
+	                double subTotalNeto = 0;
 	                double totalFactura = 0;
 	                double totalImpuestos = 0;
 	                
@@ -232,14 +219,17 @@ public class PanelFacturas extends GradientPanel{
 	                    tablaDetalles.addCell(String.format("%.2f", impuesto));
 	                    tablaDetalles.addCell(String.format("%.2f", subtotal));
 	                    
-	                    totalFactura += subtotal;
+	                    subTotalNeto += subtotal;
 	                    totalImpuestos += impuesto;
+	                    
+	                    totalFactura = subTotalNeto + totalImpuestos;
 	                }
+	                
 	                
 	                document.add(tablaDetalles);
 	                document.add(new Paragraph(" "));
 	                
-	                document.add(new Paragraph("Subtotal: " + String.format("%.2f", totalFactura - totalImpuestos)));
+	                document.add(new Paragraph("Subtotal: " + String.format("%.2f", subTotalNeto)));
 	                document.add(new Paragraph("Impuestos (18%): " + String.format("%.2f", totalImpuestos)));
 	                document.add(new Paragraph("Total: " + String.format("%.2f", totalFactura)));
 	                document.close();
@@ -263,6 +253,11 @@ public class PanelFacturas extends GradientPanel{
 	            "Advertencia",
 	            JOptionPane.WARNING_MESSAGE);
 	    }
+	}
+	
+	public static void recargarFactura() {
+        cargarFacturasDesdeBD();
+        mostrarEnTabla();
 	}
 	
 }

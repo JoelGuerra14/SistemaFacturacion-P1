@@ -47,13 +47,13 @@ public class PanelProductos extends GradientPanel {
     private JTextField tNombre;
     private JTextField tPrecio;
     private JTextField tStock;
-	JComboBox<Proveedor> cbProveedor;
+	static JComboBox<Proveedor> cbProveedor;
     private static JTable table;
     static DefaultTableModel modeloProd; 
     private JMenu mnNewMenu_1, mnNewMenu_2;
     private JMenuItem mntmNewMenuItem_1, mntmNewMenuItem_2;
-    Connection con = DatabaseConnection.getInstance().getConnection();
-    static ArrayList<Producto> productos = new ArrayList<Producto>();
+    static Connection con = DatabaseConnection.getInstance().getConnection();
+   // static ArrayList<Producto> productos = new ArrayList<Producto>();
 
     public PanelProductos() {
 		super(Colors.GRADIENT_START, Colors.GRADIENT_END);
@@ -317,7 +317,8 @@ public class PanelProductos extends GradientPanel {
                     idGenerado = rs.getInt(1);
                 }
                 Producto nuevo = new Producto(idGenerado, nombreP, precioP, stock, codigoProducto,proveedorSeleccionado);
-                productos.add(nuevo);
+                
+                Producto.listaProductos.add(nuevo);
                 actualizarTablaDesdeArrayList();
                 JOptionPane.showMessageDialog(null, "Producto insertado correctamente.");
             } else {
@@ -332,7 +333,7 @@ public class PanelProductos extends GradientPanel {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         model.setRowCount(0); // Limpiar tabla
 
-        for (Producto p : productos) {
+        for (Producto p : Producto.listaProductos) {
             Object[] fila = {
                 p.getId(),
                 p.getCodigo(),
@@ -346,7 +347,7 @@ public class PanelProductos extends GradientPanel {
         }
     }
     
-    private void cargarProveedoresDesdeBD() {
+    public static void cargarProveedoresDesdeBD() {
         cbProveedor.removeAllItems();
         String sql = "SELECT id_proveedor, nombre FROM proveedores";
         try (PreparedStatement ps = con.prepareStatement(sql);
@@ -362,7 +363,7 @@ public class PanelProductos extends GradientPanel {
     }
     
     private void cargarProductosDesdeBD() {
-        productos.clear();
+    	Producto.listaProductos.clear();
         
         String sql = "SELECT p.id_producto, p.nombre, p.precio, p.stock, pr.nombre AS proveedor, p.fk_id_proveedores, p.codigo " +
                 "FROM productos p LEFT JOIN proveedores pr ON p.fk_id_proveedores = pr.id_proveedor";
@@ -382,7 +383,7 @@ public class PanelProductos extends GradientPanel {
                 Proveedor proveedor = new Proveedor(idProveedor, nombreProveedor);
 
                 Producto producto = new Producto(idProducto, nombre, precio, stock, codigoProducto, proveedor);
-                productos.add(producto);
+                Producto.listaProductos.add(producto);
             }
             actualizarTablaDesdeArrayList();
 
@@ -399,7 +400,7 @@ public class PanelProductos extends GradientPanel {
             int filasAfectadas = ps.executeUpdate();
 
             if (filasAfectadas > 0) {
-                productos.removeIf(producto -> producto.getId() == idProducto);
+            	Producto.listaProductos.removeIf(producto -> producto.getId() == idProducto);
                 actualizarTablaDesdeArrayList();
                 JOptionPane.showMessageDialog(null, "Producto eliminado correctamente.");
             } else {
